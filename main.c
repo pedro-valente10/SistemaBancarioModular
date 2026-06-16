@@ -35,27 +35,34 @@ int main() {
     int usuario_logado_id = -1; /* Armazena o ID do cliente autenticado (-1 se nao logado) */
 
     while (1) {
-        printf("\nSISTEMA BANCARIO MODULAR\n");
+        printf("\n┌───────────────────────────────────────────┐\n");
+        printf("│         SISTEMA BANCÁRIO MODULAR          │\n");
+        printf("├───────────────────────────────────────────┤\n");
         if (usuario_logado_id != -1) {
-            printf("Cliente logado ID: %d\n", usuario_logado_id);
+            printf("│ [Status] Cliente Logado (ID: %-3d)        │\n", usuario_logado_id);
         } else {
-            printf("Nao logado\n");
+            printf("│ [Status] Não autenticado                  │\n");
         }
-        printf("0. Rodar Bateria de Testes Automatizados\n");
-        printf("1. Cadastrar Cliente\n");
-        printf("2. Fazer Login\n");
-        printf("3. Abrir Conta\n");
-        printf("4. Consultar Saldo\n");
-        printf("5. Depositar\n");
-        printf("6. Sacar\n");
-        printf("7. Transferir\n");
-        printf("8. Listar Historico\n");
-        printf("9. Sair\n");
-        printf("Escolha uma opcao: ");
+        printf("├────────────────────────────────────────────┤\n");
+        printf("│ [Operações]                                │\n");
+        printf("│  ➤ 0. Rodar Testes Automatizados          │\n");
+        printf("│  ➤ 1. Cadastrar Cliente                   │\n");
+        printf("│  ➤ 2. Fazer Login                         │\n");
+        printf("│  ➤ 3. Abrir Conta                         │\n");
+        printf("│  ➤ 4. Consultar Saldo                     │\n");
+        printf("│  ➤ 5. Depositar                           │\n");
+        printf("│  ➤ 6. Sacar                               │\n");
+        printf("│  ➤ 7. Transferir                          │\n");
+        printf("│  ➤ 8. Listar Histórico                    │\n");
+        printf("├────────────────────────────────────────────┤\n");
+        printf("│ [Sair]                                     │\n");
+        printf("│  ➤ 9. Sair                                │\n");
+        printf("└────────────────────────────────────────────┘\n");
+        printf("Escolha uma opção: ");
 
         /* Tratamento basico de erro caso a entrada nao seja numerica */
         if (scanf("%d", &opcao) != 1) {
-            printf("Erro: Opcao invalida. Digite um numero.\n");
+            printf("⚠ Erro: Opção inválida. Digite um número.\n");
             limpar_buffer();
             continue;
         }
@@ -63,10 +70,10 @@ int main() {
 
         switch (opcao) {
             case 0: {
-                printf("\nExecutando bateria de testes automatizados...\n");
+                printf("\n✦ Executando bateria de testes automatizados...\n");
                 /* executar_testes_contas(); */
                 /* executar_testes_transacoes(); */
-                printf("Testes finalizados.\n");
+                printf("✦ Testes finalizados.\n");
                 break;
             }
             case 1: {
@@ -76,7 +83,7 @@ int main() {
                 int novo_id = -1; /* Ponteiro de saida: recebe o ID incremental gerado para o cliente */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\nCadastrar Cliente\n");
+                printf("\n=== Cadastrar Cliente ===\n");
                 printf("Nome: ");
                 if (fgets(nome, sizeof(nome), stdin)) {
                     nome[strcspn(nome, "\n")] = '\0';
@@ -93,9 +100,9 @@ int main() {
                 /* Invocacao por referencia */
                 status = cadastrar_cliente(nome, cpf, senha, &novo_id);
                 if (status == 0) {
-                    printf("Cliente cadastrado com sucesso! ID: %d\n", novo_id);
+                    printf("✦ Sucesso: Cliente cadastrado com sucesso! ID: %d\n", novo_id);
                 } else {
-                    printf("Erro ao cadastrar cliente (CPF ja cadastrado ou limite atingido).\n");
+                    printf("⚠ Erro: CPF já cadastrado ou limite atingido.\n");
                 }
                 break;
             }
@@ -105,7 +112,7 @@ int main() {
                 int id_cliente = -1; /* Ponteiro de saida: recebe o ID do cliente correspondente se logado */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\nFazer Login\n");
+                printf("\n=== Fazer Login ===\n");
                 printf("CPF: ");
                 if (fgets(cpf, sizeof(cpf), stdin)) {
                     cpf[strcspn(cpf, "\n")] = '\0';
@@ -118,9 +125,9 @@ int main() {
                 status = login(cpf, senha, &id_cliente);
                 if (status == 0) {
                     usuario_logado_id = id_cliente;
-                    printf("Login realizado com sucesso! ID do cliente: %d\n", usuario_logado_id);
+                    printf("✦ Sucesso: Login realizado com sucesso! ID do cliente: %d\n", usuario_logado_id);
                 } else {
-                    printf("Erro: CPF ou senha incorretos.\n");
+                    printf("⚠ Erro: CPF ou senha incorretos.\n");
                 }
                 break;
             }
@@ -130,7 +137,7 @@ int main() {
                 char tipo_conta[20]; /* Armazena o tipo da conta */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\nAbrir Conta\n");
+                printf("\n=== Abrir Conta ===\n");
                 if (usuario_logado_id != -1) {
                     char resp; /* Armazena a resposta de confirmacao (S/N) sobre usar o cliente logado */
                     printf("Usar cliente logado (%d)? (s/n): ", usuario_logado_id);
@@ -144,7 +151,7 @@ int main() {
                     } else {
                         printf("Digite o ID do Cliente: ");
                         if (scanf("%d", &id_cliente) != 1) {
-                            printf("Erro: ID invalido.\n");
+                            printf("⚠ Erro: ID inválido.\n");
                             limpar_buffer();
                             break;
                         }
@@ -153,7 +160,7 @@ int main() {
                 } else {
                     printf("Digite o ID do Cliente: ");
                     if (scanf("%d", &id_cliente) != 1) {
-                        printf("Erro: ID invalido.\n");
+                        printf("⚠ Erro: ID inválido.\n");
                         limpar_buffer();
                         break;
                     }
@@ -162,7 +169,7 @@ int main() {
 
                 printf("Digite o tipo da conta (corrente ou poupanca): ");
                 if (scanf("%19s", tipo_conta) != 1) {
-                    printf("Erro: Tipo invalido.\n");
+                    printf("⚠ Erro: Tipo inválido.\n");
                     limpar_buffer();
                     break;
                 }
@@ -170,9 +177,9 @@ int main() {
 
                 status = abrir_conta(id_cliente, tipo_conta, &numero_conta);
                 if (status == 0) {
-                    printf("Conta criada com sucesso! Numero: %d\n", numero_conta);
+                    printf("✦ Sucesso: Conta criada com sucesso! Número: %d\n", numero_conta);
                 } else {
-                    printf("Erro ao criar conta (cliente inexistente ou limite de contas).\n");
+                    printf("⚠ Erro: Cliente inexistente ou limite de contas atingido.\n");
                 }
                 break;
             }
@@ -181,10 +188,10 @@ int main() {
                 double saldo = 0.0; /* Ponteiro de saida: recebe o valor do saldo da conta */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\nConsultar Saldo\n");
-                printf("Digite o numero da conta: ");
+                printf("\n=== Consultar Saldo ===\n");
+                printf("Digite o número da conta: ");
                 if (scanf("%d", &numero_conta) != 1) {
-                    printf("Erro: Numero invalido.\n");
+                    printf("⚠ Erro: Número inválido.\n");
                     limpar_buffer();
                     break;
                 }
@@ -192,9 +199,9 @@ int main() {
 
                 status = consultar_saldo(numero_conta, &saldo);
                 if (status == 0) {
-                    printf("Saldo da conta %d: R$ %.2f\n", numero_conta, saldo);
+                    printf("✦ Sucesso: Saldo da conta %d: R$ %.2f\n", numero_conta, saldo);
                 } else {
-                    printf("Erro: Conta nao encontrada.\n");
+                    printf("⚠ Erro: Conta não encontrada.\n");
                 }
                 break;
             }
@@ -203,16 +210,16 @@ int main() {
                 double valor; /* Armazena a quantia monetaria a ser depositada */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\nDepositar\n");
-                printf("Digite o numero da conta: ");
+                printf("\n=== Depositar ===\n");
+                printf("Digite o número da conta: ");
                 if (scanf("%d", &numero_conta) != 1) {
-                    printf("Erro: Numero invalido.\n");
+                    printf("⚠ Erro: Número inválido.\n");
                     limpar_buffer();
                     break;
                 }
-                printf("Digite o valor do deposito: ");
+                printf("Digite o valor do depósito: ");
                 if (scanf("%lf", &valor) != 1 || valor <= 0) {
-                    printf("Erro: Valor invalido.\n");
+                    printf("⚠ Erro: Valor inválido.\n");
                     limpar_buffer();
                     break;
                 }
@@ -220,9 +227,9 @@ int main() {
 
                 status = depositar(numero_conta, valor);
                 if (status == 0) {
-                    printf("Deposito de R$ %.2f concluido na conta %d!\n", valor, numero_conta);
+                    printf("✦ Sucesso: Depósito de R$ %.2f concluído na conta %d!\n", valor, numero_conta);
                 } else {
-                    printf("Erro ao depositar (conta inexistente ou valor invalido).\n");
+                    printf("⚠ Erro: Conta inexistente ou valor inválido.\n");
                 }
                 break;
             }
@@ -231,16 +238,16 @@ int main() {
                 double valor; /* Armazena a quantia monetaria a ser sacada */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\nSacar\n");
-                printf("Digite o numero da conta: ");
+                printf("\n=== Sacar ===\n");
+                printf("Digite o número da conta: ");
                 if (scanf("%d", &numero_conta) != 1) {
-                    printf("Erro: Numero invalido.\n");
+                    printf("⚠ Erro: Número inválido.\n");
                     limpar_buffer();
                     break;
                 }
                 printf("Digite o valor do saque: ");
                 if (scanf("%lf", &valor) != 1 || valor <= 0) {
-                    printf("Erro: Valor invalido.\n");
+                    printf("⚠ Erro: Valor inválido.\n");
                     limpar_buffer();
                     break;
                 }
@@ -248,9 +255,9 @@ int main() {
 
                 status = sacar(numero_conta, valor);
                 if (status == 0) {
-                    printf("Saque de R$ %.2f concluido na conta %d!\n", valor, numero_conta);
+                    printf("✦ Sucesso: Saque de R$ %.2f concluído na conta %d!\n", valor, numero_conta);
                 } else {
-                    printf("Erro ao sacar (saldo insuficiente ou conta inexistente).\n");
+                    printf("⚠ Erro: Saldo insuficiente ou conta inexistente.\n");
                 }
                 break;
             }
@@ -260,22 +267,22 @@ int main() {
                 double valor; /* Armazena a quantia monetaria a ser transferida */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\nTransferir\n");
-                printf("Digite o numero da conta de origem: ");
+                printf("\n=== Transferir ===\n");
+                printf("Digite o número da conta de origem: ");
                 if (scanf("%d", &conta_origem) != 1) {
-                    printf("Erro: Numero invalido.\n");
+                    printf("⚠ Erro: Número inválido.\n");
                     limpar_buffer();
                     break;
                 }
-                printf("Digite o numero da conta de destino: ");
+                printf("Digite o número da conta de destino: ");
                 if (scanf("%d", &conta_destino) != 1) {
-                    printf("Erro: Numero invalido.\n");
+                    printf("⚠ Erro: Número inválido.\n");
                     limpar_buffer();
                     break;
                 }
-                printf("Digite o valor da transferencia: ");
+                printf("Digite o valor da transferência: ");
                 if (scanf("%lf", &valor) != 1 || valor <= 0) {
-                    printf("Erro: Valor invalido.\n");
+                    printf("⚠ Erro: Valor inválido.\n");
                     limpar_buffer();
                     break;
                 }
@@ -283,19 +290,19 @@ int main() {
 
                 status = transferir(conta_origem, conta_destino, valor);
                 if (status == 0) {
-                    printf("Transferencia de R$ %.2f de %d para %d concluida com sucesso!\n", valor, conta_origem, conta_destino);
+                    printf("✦ Sucesso: Transferência de R$ %.2f de %d para %d concluída com sucesso!\n", valor, conta_origem, conta_destino);
                 } else {
-                    printf("Erro na transferencia (saldo insuficiente ou contas invalidas).\n");
+                    printf("⚠ Erro: Saldo insuficiente ou contas inválidas.\n");
                 }
                 break;
             }
             case 8: {
                 int numero_conta; /* Armazena o numero da conta para consulta do historico */
 
-                printf("\nHistorico de Transacoes\n");
-                printf("Digite o numero da conta: ");
+                printf("\n=== Histórico de Transações ===\n");
+                printf("Digite o número da conta: ");
                 if (scanf("%d", &numero_conta) != 1) {
-                    printf("Erro: Numero invalido.\n");
+                    printf("⚠ Erro: Número inválido.\n");
                     limpar_buffer();
                     break;
                 }
@@ -305,10 +312,10 @@ int main() {
                 break;
             }
             case 9:
-                printf("\nSaindo do sistema bancario. Ate mais!\n");
+                printf("\n✦ Saindo do sistema bancário. Até mais!\n");
                 return 0;
             default:
-                printf("\nOpcao invalida. Tente novamente.\n");
+                printf("\n⚠ Erro: Opção inválida. Tente novamente.\n");
                 break;
         }
     }
