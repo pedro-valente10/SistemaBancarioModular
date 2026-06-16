@@ -115,7 +115,7 @@ int main() {
                     senha[strcspn(senha, "\n")] = '\0';
                 }
 
-                status = fazer_login(cpf, senha, &id_cliente);
+                status = login(cpf, senha, &id_cliente);
                 if (status == 0) {
                     usuario_logado_id = id_cliente;
                     printf("Login realizado com sucesso! ID do cliente: %d\n", usuario_logado_id);
@@ -127,6 +127,7 @@ int main() {
             case 3: {
                 int id_cliente; /* Armazena o ID do cliente que sera proprietario da conta */
                 int numero_conta = -1; /* Ponteiro de saida: recebe o numero da conta gerado pelo sistema */
+                char tipo_conta[20]; /* Armazena o tipo da conta */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
                 printf("\nAbrir Conta\n");
@@ -159,7 +160,15 @@ int main() {
                     limpar_buffer();
                 }
 
-                status = abrir_conta(id_cliente, &numero_conta);
+                printf("Digite o tipo da conta (corrente ou poupanca): ");
+                if (scanf("%19s", tipo_conta) != 1) {
+                    printf("Erro: Tipo invalido.\n");
+                    limpar_buffer();
+                    break;
+                }
+                limpar_buffer();
+
+                status = abrir_conta(id_cliente, tipo_conta, &numero_conta);
                 if (status == 0) {
                     printf("Conta criada com sucesso! Numero: %d\n", numero_conta);
                 } else {
@@ -169,7 +178,7 @@ int main() {
             }
             case 4: {
                 int numero_conta; /* Armazena o numero da conta a ser consultado */
-                float saldo = 0.0f; /* Ponteiro de saida: recebe o valor do saldo da conta */
+                double saldo = 0.0; /* Ponteiro de saida: recebe o valor do saldo da conta */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
                 printf("\nConsultar Saldo\n");
@@ -191,7 +200,7 @@ int main() {
             }
             case 5: {
                 int numero_conta; /* Armazena o numero da conta destino do deposito */
-                float valor; /* Armazena a quantia monetaria a ser depositada */
+                double valor; /* Armazena a quantia monetaria a ser depositada */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
                 printf("\nDepositar\n");
@@ -202,7 +211,7 @@ int main() {
                     break;
                 }
                 printf("Digite o valor do deposito: ");
-                if (scanf("%f", &valor) != 1 || valor <= 0) {
+                if (scanf("%lf", &valor) != 1 || valor <= 0) {
                     printf("Erro: Valor invalido.\n");
                     limpar_buffer();
                     break;
@@ -219,7 +228,7 @@ int main() {
             }
             case 6: {
                 int numero_conta; /* Armazena o numero da conta de onde sera realizado o saque */
-                float valor; /* Armazena a quantia monetaria a ser sacada */
+                double valor; /* Armazena a quantia monetaria a ser sacada */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
                 printf("\nSacar\n");
@@ -230,7 +239,7 @@ int main() {
                     break;
                 }
                 printf("Digite o valor do saque: ");
-                if (scanf("%f", &valor) != 1 || valor <= 0) {
+                if (scanf("%lf", &valor) != 1 || valor <= 0) {
                     printf("Erro: Valor invalido.\n");
                     limpar_buffer();
                     break;
@@ -248,7 +257,7 @@ int main() {
             case 7: {
                 int conta_origem; /* Armazena o numero da conta de origem dos fundos */
                 int conta_destino; /* Armazena o numero da conta de destino dos fundos */
-                float valor; /* Armazena a quantia monetaria a ser transferida */
+                double valor; /* Armazena a quantia monetaria a ser transferida */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
                 printf("\nTransferir\n");
@@ -265,7 +274,7 @@ int main() {
                     break;
                 }
                 printf("Digite o valor da transferencia: ");
-                if (scanf("%f", &valor) != 1 || valor <= 0) {
+                if (scanf("%lf", &valor) != 1 || valor <= 0) {
                     printf("Erro: Valor invalido.\n");
                     limpar_buffer();
                     break;
@@ -282,8 +291,6 @@ int main() {
             }
             case 8: {
                 int numero_conta; /* Armazena o numero da conta para consulta do historico */
-                int total_transacoes = 0; /* Ponteiro de saida: recebe o total de transacoes registradas na conta */
-                int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
                 printf("\nHistorico de Transacoes\n");
                 printf("Digite o numero da conta: ");
@@ -294,25 +301,7 @@ int main() {
                 }
                 limpar_buffer();
 
-                status = obter_total_transacoes(numero_conta, &total_transacoes);
-                if (status == 0) {
-                    if (total_transacoes == 0) {
-                        printf("Nenhuma transacao encontrada para essa conta.\n");
-                    } else {
-                        int i; /* Variavel contadora para iterar no loop do historico de transacoes */
-                        printf("Historico da conta %d (%d transacoes):\n", numero_conta, total_transacoes);
-                        for (i = 0; i < total_transacoes; i++) {
-                            char tipo[20]; /* Ponteiro de saida: recebe o tipo da transacao (ex: Deposito, Saque) */
-                            float valor = 0.0f; /* Ponteiro de saida: recebe o valor numerico da transacao */
-                            /* Busca elemento a elemento por referencia respeitando as restricoes */
-                            if (obter_transacao(numero_conta, i, tipo, &valor) == 0) {
-                                printf("%d. %s: R$ %.2f\n", i + 1, tipo, valor);
-                            }
-                        }
-                    }
-                } else {
-                    printf("Erro ao buscar historico (conta nao encontrada).\n");
-                }
+                listar_transacoes(numero_conta);
                 break;
             }
             case 9:
