@@ -7,6 +7,9 @@
 #include "contas.h"
 #include "transacoes.h"
 
+/*Importa o cabeçalho dos testes*/
+#include "testes.h"
+
 /**
  * @brief Limpa o buffer de entrada do teclado (stdin) de forma portavel (C99/C11).
  * 
@@ -70,8 +73,7 @@ int main() {
         switch (opcao) {
             case 0: {
                 printf("\n✦ Executando bateria de testes automatizados...\n");
-                /* executar_testes_contas(); */
-                /* executar_testes_transacoes(); */
+                executar_testes(); //executa todos os testes definidos no arquivo testes.c
                 printf("✦ Testes finalizados.\n");
                 break;
             }
