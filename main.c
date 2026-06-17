@@ -35,29 +35,28 @@ int main() {
     int usuario_logado_id = -1; /* Armazena o ID do cliente autenticado (-1 se nao logado) */
 
     while (1) {
-        printf("\n┌───────────────────────────────────────────┐\n");
-        printf("│         SISTEMA BANCÁRIO MODULAR          │\n");
-        printf("├───────────────────────────────────────────┤\n");
+        printf("\n╔═══════════════════════════════════════════════════════╗\n");
+        printf("║               SISTEMA BANCÁRIO MODULAR                ║\n");
+        printf("╠═══════════════════════════════════════════════════════╣\n");
         if (usuario_logado_id != -1) {
-            printf("│ [Status] Cliente Logado (ID: %-3d)        │\n", usuario_logado_id);
+            printf("║ [Status] Cliente Logado (ID: %-3d)                    ║\n", usuario_logado_id);
         } else {
-            printf("│ [Status] Não autenticado                  │\n");
+            printf("║ [Status] Não autenticado                              ║\n");
         }
-        printf("├────────────────────────────────────────────┤\n");
-        printf("│ [Operações]                                │\n");
-        printf("│  ➤ 0. Rodar Testes Automatizados          │\n");
-        printf("│  ➤ 1. Cadastrar Cliente                   │\n");
-        printf("│  ➤ 2. Fazer Login                         │\n");
-        printf("│  ➤ 3. Abrir Conta                         │\n");
-        printf("│  ➤ 4. Consultar Saldo                     │\n");
-        printf("│  ➤ 5. Depositar                           │\n");
-        printf("│  ➤ 6. Sacar                               │\n");
-        printf("│  ➤ 7. Transferir                          │\n");
-        printf("│  ➤ 8. Listar Histórico                    │\n");
-        printf("├────────────────────────────────────────────┤\n");
-        printf("│ [Sair]                                     │\n");
-        printf("│  ➤ 9. Sair                                │\n");
-        printf("└────────────────────────────────────────────┘\n");
+        printf("╠═══════════════════════════════════════════════════════╣\n");
+        printf("║ [Operações]                                           ║\n");
+        printf("║  ➤ 0. Rodar Testes Automatizados                      ║\n");
+        printf("║  ➤ 1. Cadastrar Cliente                               ║\n");
+        printf("║  ➤ 2. Fazer Login                                     ║\n");
+        printf("║  ➤ 3. Abrir Conta                                     ║\n");
+        printf("║  ➤ 4. Consultar Saldo                                 ║\n");
+        printf("║  ➤ 5. Depositar                                       ║\n");
+        printf("║  ➤ 6. Sacar                                           ║\n");
+        printf("║  ➤ 7. Transferir                                      ║\n");
+        printf("║  ➤ 8. Listar Histórico                                ║\n");
+        printf("╠═══════════════════════════════════════════════════════╣\n");
+        printf("║  ➤ 9. Sair                                            ║\n");
+        printf("╚═══════════════════════════════════════════════════════╝\n");
         printf("Escolha uma opção: ");
 
         /* Tratamento basico de erro caso a entrada nao seja numerica */
@@ -83,7 +82,9 @@ int main() {
                 int novo_id = -1; /* Ponteiro de saida: recebe o ID incremental gerado para o cliente */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\n=== Cadastrar Cliente ===\n");
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                   CADASTRAR CLIENTE                   ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
                 printf("Nome: ");
                 if (fgets(nome, sizeof(nome), stdin)) {
                     nome[strcspn(nome, "\n")] = '\0';
@@ -100,7 +101,7 @@ int main() {
                 /* Invocacao por referencia */
                 status = cadastrar_cliente(nome, cpf, senha, &novo_id);
                 if (status == 0) {
-                    printf("✦ Sucesso: Cliente cadastrado com sucesso! ID: %d\n", novo_id);
+                    printf("✦ Sucesso: Cliente cadastrado! ID: %d\n", novo_id);
                 } else {
                     printf("⚠ Erro: CPF já cadastrado ou limite atingido.\n");
                 }
@@ -112,7 +113,9 @@ int main() {
                 int id_cliente = -1; /* Ponteiro de saida: recebe o ID do cliente correspondente se logado */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\n=== Fazer Login ===\n");
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                      FAZER LOGIN                      ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
                 printf("CPF: ");
                 if (fgets(cpf, sizeof(cpf), stdin)) {
                     cpf[strcspn(cpf, "\n")] = '\0';
@@ -125,7 +128,7 @@ int main() {
                 status = login(cpf, senha, &id_cliente);
                 if (status == 0) {
                     usuario_logado_id = id_cliente;
-                    printf("✦ Sucesso: Login realizado com sucesso! ID do cliente: %d\n", usuario_logado_id);
+                    printf("✦ Sucesso: Login realizado! ID do cliente: %d\n", usuario_logado_id);
                 } else {
                     printf("⚠ Erro: CPF ou senha incorretos.\n");
                 }
@@ -137,7 +140,9 @@ int main() {
                 char tipo_conta[20]; /* Armazena o tipo da conta */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\n=== Abrir Conta ===\n");
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                      ABRIR CONTA                      ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
                 if (usuario_logado_id != -1) {
                     char resp; /* Armazena a resposta de confirmacao (S/N) sobre usar o cliente logado */
                     printf("Usar cliente logado (%d)? (s/n): ", usuario_logado_id);
@@ -179,7 +184,7 @@ int main() {
                 if (status == 0) {
                     printf("✦ Sucesso: Conta criada com sucesso! Número: %d\n", numero_conta);
                 } else {
-                    printf("⚠ Erro: Cliente inexistente ou limite de contas atingido.\n");
+                    printf("⚠ Erro: Cliente inexistente ou limite atingido.\n");
                 }
                 break;
             }
@@ -188,7 +193,9 @@ int main() {
                 double saldo = 0.0; /* Ponteiro de saida: recebe o valor do saldo da conta */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\n=== Consultar Saldo ===\n");
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                    CONSULTAR SALDO                    ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
                 printf("Digite o número da conta: ");
                 if (scanf("%d", &numero_conta) != 1) {
                     printf("⚠ Erro: Número inválido.\n");
@@ -210,7 +217,9 @@ int main() {
                 double valor; /* Armazena a quantia monetaria a ser depositada */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\n=== Depositar ===\n");
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                       DEPOSITAR                       ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
                 printf("Digite o número da conta: ");
                 if (scanf("%d", &numero_conta) != 1) {
                     printf("⚠ Erro: Número inválido.\n");
@@ -227,7 +236,7 @@ int main() {
 
                 status = depositar(numero_conta, valor);
                 if (status == 0) {
-                    printf("✦ Sucesso: Depósito de R$ %.2f concluído na conta %d!\n", valor, numero_conta);
+                    printf("✦ Sucesso: Depósito de R$ %.2f na conta %d\n", valor, numero_conta);
                 } else {
                     printf("⚠ Erro: Conta inexistente ou valor inválido.\n");
                 }
@@ -238,7 +247,9 @@ int main() {
                 double valor; /* Armazena a quantia monetaria a ser sacada */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\n=== Sacar ===\n");
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                         SACAR                         ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
                 printf("Digite o número da conta: ");
                 if (scanf("%d", &numero_conta) != 1) {
                     printf("⚠ Erro: Número inválido.\n");
@@ -255,7 +266,7 @@ int main() {
 
                 status = sacar(numero_conta, valor);
                 if (status == 0) {
-                    printf("✦ Sucesso: Saque de R$ %.2f concluído na conta %d!\n", valor, numero_conta);
+                    printf("✦ Sucesso: Saque de R$ %.2f na conta %d\n", valor, numero_conta);
                 } else {
                     printf("⚠ Erro: Saldo insuficiente ou conta inexistente.\n");
                 }
@@ -267,7 +278,9 @@ int main() {
                 double valor; /* Armazena a quantia monetaria a ser transferida */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
 
-                printf("\n=== Transferir ===\n");
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                      TRANSFERIR                       ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
                 printf("Digite o número da conta de origem: ");
                 if (scanf("%d", &conta_origem) != 1) {
                     printf("⚠ Erro: Número inválido.\n");
@@ -290,7 +303,8 @@ int main() {
 
                 status = transferir(conta_origem, conta_destino, valor);
                 if (status == 0) {
-                    printf("✦ Sucesso: Transferência de R$ %.2f de %d para %d concluída com sucesso!\n", valor, conta_origem, conta_destino);
+                    printf("✦ Sucesso: Transferência concluída!\n");
+                    printf("Valor: R$ %.2f De: %d Para: %d\n", valor, conta_origem, conta_destino);
                 } else {
                     printf("⚠ Erro: Saldo insuficiente ou contas inválidas.\n");
                 }
@@ -299,7 +313,9 @@ int main() {
             case 8: {
                 int numero_conta; /* Armazena o numero da conta para consulta do historico */
 
-                printf("\n=== Histórico de Transações ===\n");
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                HISTÓRICO DE TRANSAÇÕES                ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
                 printf("Digite o número da conta: ");
                 if (scanf("%d", &numero_conta) != 1) {
                     printf("⚠ Erro: Número inválido.\n");
