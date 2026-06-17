@@ -14,53 +14,89 @@ typedef struct {
 } Cliente;
 
 /**
- * @brief Cadastra um novo cliente no sistema.
- * 
- * @param nome Ponteiro para a string com o nome do cliente (entrada).
- * @param cpf Ponteiro para a string com o CPF do cliente (entrada).
- * @param senha Ponteiro para a string com a senha do cliente (entrada).
- * @param id_cliente_gerado Ponteiro de saída que receberá o ID gerado para o cliente (saída).
- * @return int Retorna 0 em caso de sucesso, ou -1 se houver erro (CPF já cadastrado ou limite de clientes atingido).
+ * @brief Cadastra um novo cliente, gerando um ID único e incremental.
+ * @param nome  String não-vazia com o nome do cliente (entrada).
+ * @param cpf   String com 11 dígitos, com ou sem máscara; será normalizada
+ *              para o formato 000.000.000-00 antes de armazenar (entrada).
+ * @param senha String com no mínimo 6 caracteres (entrada).
+ * @param id_cliente_gerado  Endereço onde o ID gerado será escrito (saída).
+ * @return int  0 em sucesso; -1 em erro.
+ *
+ * Assertiva de entrada:  nome, cpf, senha e id_cliente_gerado são ponteiros
+ *                        válidos (não-nulos).
+ * Assertiva de saída:
+ *   - se 0: existe no armazenamento um cliente com os dados informados (CPF
+ *     em formato canônico), *id_cliente_gerado > 0 e o total aumentou em 1;
+ *   - se -1: o armazenamento NÃO foi alterado. Causas: ponteiro nulo, limite
+ *     MAX_CLIENTES atingido, nome vazio, senha < 6, CPF inválido (caracteres
+ *     não permitidos ou quantidade de dígitos != 11) ou CPF já cadastrado.
  */
 int cadastrar_cliente(const char *nome, const char *cpf, const char *senha, int *id_cliente_gerado);
 
 /**
- * @brief Realiza a autenticação de um cliente com CPF e senha.
- * 
- * @param cpf Ponteiro para a string com o CPF do cliente (entrada).
- * @param senha Ponteiro para a string com a senha do cliente (entrada).
- * @param id_cliente_retornado Ponteiro de saída que receberá o ID do cliente autenticado (saída).
- * @return int Retorna 0 para sucesso no login, ou -1 para credenciais incorretas (erro).
+ * @brief Autentica um cliente por CPF e senha.
+ * @param cpf   String com o CPF (com ou sem máscara; é normalizada) (entrada).
+ * @param senha String com a senha (comparação case-sensitive) (entrada).
+ * @param id_cliente_retornado  Endereço que recebe o ID autenticado (saída).
+ * @return int  0 em sucesso; -1 para credenciais inválidas.
+ *
+ * Assertiva de entrada:  cpf, senha e id_cliente_retornado são ponteiros
+ *                        válidos (não-nulos).
+ * Assertiva de saída:
+ *   - se 0: *id_cliente_retornado contém o ID do cliente cujo CPF e senha
+ *     conferem; o armazenamento não é alterado;
+ *   - se -1: nenhum cliente confere; o armazenamento não é alterado. Por
+ *     segurança, não se distingue CPF inexistente de senha incorreta.
  */
 int login(const char *cpf, const char *senha, int *id_cliente_retornado);
 
 /**
- * @brief Localiza um cliente na estrutura interna pelo seu ID único.
- * 
- * @param id_cliente ID do cliente a ser buscado (entrada).
- * @param cliente_retornado Ponteiro de saída que receberá os dados do cliente encontrado (saída).
- * @return int Retorna 0 em caso de sucesso, ou -1 se o ID não for encontrado.
+ * @brief Localiza um cliente pelo ID e copia seus dados para o chamador.
+ * @param id_cliente  ID do cliente buscado (entrada).
+ * @param cliente_retornado  Endereço de um Cliente que recebe a cópia (saída).
+ * @return int  0 em sucesso; -1 se não encontrado ou parâmetro inválido.
+ *
+ * Assertiva de entrada:  cliente_retornado é um ponteiro válido (não-nulo).
+ * Assertiva de saída:
+ *   - se 0: *cliente_retornado é uma cópia do registro cujo id == id_cliente;
+ *   - se -1: *cliente_retornado não é modificado de forma confiável. Causas:
+ *     ponteiro nulo, id_cliente <= 0 ou ID inexistente.
  */
 int buscar_cliente(int id_cliente, Cliente *cliente_retornado);
 
 /**
- * @brief Exibe no console todos os clientes cadastrados no sistema.
- * 
- * Apenas realiza saída para stdout e não exibe o campo senha.
+ * @brief Exibe no console todos os clientes (ID, nome e CPF).
+ * @return void. Apenas escreve em stdout.
+ *
+ * Assertiva de entrada:  nenhuma.
+ * Assertiva de saída:    o campo senha NUNCA é exibido; o armazenamento não é
+ *                        alterado; se vazio, informa que não há clientes.
  */
 void listar_clientes(void);
 
 /**
- * @brief Salva os dados dos clientes em um arquivo de texto.
- * 
- * @return int Retorna 0 em caso de sucesso, ou -1 se houver erro ao abrir/escrever o arquivo.
+ * @brief Grava todos os clientes em memória no arquivo texto clientes.txt.
+ * @return int  0 em sucesso; -1 se não for possível abrir o arquivo p/ escrita.
+ *
+ * Assertiva de entrada:  nenhuma.
+ * Assertiva de saída:
+ *   - se 0: clientes.txt contém uma linha por cliente no formato
+ *     id;nome;cpf;senha;
+ *   - se -1: o arquivo não pôde ser aberto; o armazenamento não é alterado.
  */
 int salvar_clientes_arquivo(void);
 
 /**
- * @brief Carrega os dados dos clientes de um arquivo de texto.
- * 
- * @return int Retorna 0 em caso de sucesso, ou -1 se houver erro ao abrir/ler o arquivo.
+ * @brief Recarrega os clientes a partir de clientes.txt, substituindo o
+ *        conteúdo em memória.
+ * @return int  0 em sucesso; -1 se o arquivo não existir (1ª execução).
+ *
+ * Assertiva de entrada:  nenhuma.
+ * Assertiva de saída:
+ *   - o armazenamento interno é reinicializado antes da leitura; o gerador de
+ *     ID passa a ser (maior_id_lido + 1);
+ *   - se 0: o armazenamento reflete o conteúdo do arquivo (até MAX_CLIENTES);
+ *   - se -1: arquivo inexistente; o armazenamento fica vazio (não é erro fatal).
  */
 int carregar_clientes_arquivo(void);
 
