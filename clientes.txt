@@ -1,0 +1,11 @@
+1;Alisson Becker;111.111.111-11;goleiro1
+2;Marquinhos;222.222.222-22;zaga2026
+3;Gabriel Magalhaes;333.333.333-33;defesa33
+4;Vinicius Junior;444.444.444-44;brasil10
+5;Rodrygo;555.555.555-55;real2026
+6;Raphinha;666.666.666-66;barca11
+7;Endrick;777.777.777-77;joia2026
+8;Bruno Guimaraes;888.888.888-88;meio888
+9;Lucas Paqueta;999.999.999-99;paqueta1
+10;Casemiro;100.200.300-40;volante5
+11;Danilo;110.220.330-44;capitao2
