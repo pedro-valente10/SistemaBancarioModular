@@ -4,7 +4,7 @@
 /**
  * @brief Executa a suíte completa de testes automatizados do sistema.
  *
- * Cobre os casos CT-01 a CT-13 definidos no documento T2 (seção 6),
+ * Cobre os casos CT-01 a CT-13 definidos no documento T4 (seção 6),
  * incluindo clientes, contas e transações. Imprime o resultado de cada
  * caso (PASS/FAIL) e um relatório final consolidado.
  *

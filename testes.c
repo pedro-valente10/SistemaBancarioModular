@@ -2,7 +2,7 @@
  * @file testes.c
  * @brief Suíte de testes automatizados do Sistema Bancário Modular.
  *
- * Cobre todos os casos de teste definidos no documento T2 (seção 6),
+ * Cobre todos os casos de teste definidos no documento T4 (seção 6),
  * do CT-01 ao CT-13. Cada teste imprime PASS ou FAIL com descrição.
  *
  * Compilação (junto com os demais módulos):
@@ -232,6 +232,26 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
     assert_teste("CT-12b", "saldo permanece inalterado após tentativa inválida",
                  saldo == 300.0);
 
+    /*  CT-16: Operações com valores negativos ou zero  */
+    ret = depositar(id_conta1, -50.0);
+    assert_teste("CT-16a", "depositar() retorna -1 para valor negativo", ret == -1);
+    ret = depositar(id_conta1, 0.0);
+    assert_teste("CT-16b", "depositar() retorna -1 para valor zero", ret == -1);
+
+    /*  CT-17: Saque com valores negativos ou zero  */
+    ret = sacar(id_conta1, -10.0);
+    assert_teste("CT-17a", "sacar() retorna -1 para valor negativo", ret == -1);
+    ret = sacar(id_conta1, 0.0);
+    assert_teste("CT-17b", "sacar() retorna -1 para valor zero", ret == -1);
+
+    /*  CT-18: Transferência com valores negativos ou zero  */
+    ret = transferir(id_conta1, id_conta2, -20.0);
+    assert_teste("CT-18a", "transferir() retorna -1 para valor negativo", ret == -1);
+
+    /*  CT-19: Transferência com saldo insuficiente na origem  */
+    ret = transferir(id_conta1, id_conta2, 99999.0);
+    assert_teste("CT-19a", "transferir() retorna -1 para saldo insuficiente", ret == -1);
+
     /*  CT-13: Listagem do histórico  */
     /*
      * A conta1 acumulou até aqui (em ordem):
@@ -262,7 +282,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
  */
 int executar_testes(void) {
     printf("\n╔═══════════════════════════════════════════════════════╗\n");
-    printf("║      SUÍTE DE TESTES AUTOMATIZADOS — T2 INF1040       ║\n");
+    printf("║      SUÍTE DE TESTES AUTOMATIZADOS — T4 INF1040       ║\n");
     printf("╚═══════════════════════════════════════════════════════╝\n");
 
     /*  Bloco Clientes  */
