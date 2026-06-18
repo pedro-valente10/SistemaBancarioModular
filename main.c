@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 /* Importacao dos cabecalhos dos modulos conforme arquitetura TAD */
 #include "clientes.h"
 #include "contas.h"
 #include "transacoes.h"
 
-/*Importa o cabeçalho dos testes*/
-#include "testes.h"
 
 /**
  * @brief Limpa o buffer de entrada do teclado (stdin) de forma portavel (C99/C11).
@@ -34,6 +36,10 @@ void limpar_buffer() {
  * @return int Retorna 0 ao encerrar com sucesso.
  */
 int main() {
+#ifdef _WIN32
+    /* Força o terminal do Windows a usar UTF-8 para exibir os caracteres e bordas corretamente */
+    SetConsoleOutputCP(CP_UTF8);
+#endif
     int opcao = 0; /* Armazena a opcao de menu selecionada pelo usuario */
     int usuario_logado_id = -1; /* Armazena o ID do cliente autenticado (-1 se nao logado) */
 
@@ -46,13 +52,13 @@ int main() {
         printf("║               SISTEMA BANCÁRIO MODULAR                ║\n");
         printf("╠═══════════════════════════════════════════════════════╣\n");
         if (usuario_logado_id != -1) {
-            printf("║ [Status] Cliente Logado (ID: %-3d)                    ║\n", usuario_logado_id);
+            printf("║ [Status] Cliente Logado (ID: %-3d)                     ║\n", usuario_logado_id);
         } else {
             printf("║ [Status] Não autenticado                              ║\n");
         }
         printf("╠═══════════════════════════════════════════════════════╣\n");
         printf("║ [Operações]                                           ║\n");
-        printf("║  ➤ 0. Rodar Testes Automatizados                      ║\n");
+
         printf("║  ➤ 1. Cadastrar Cliente                               ║\n");
         printf("║  ➤ 2. Fazer Login                                     ║\n");
         printf("║  ➤ 3. Abrir Conta                                     ║\n");
@@ -75,12 +81,7 @@ int main() {
         limpar_buffer(); /* Limpa o '\n' restante do buffer */
 
         switch (opcao) {
-            case 0: {
-                printf("\n✦ Executando bateria de testes automatizados...\n");
-                executar_testes(); //executa todos os testes definidos no arquivo testes.c
-                printf("✦ Testes finalizados.\n");
-                break;
-            }
+
             case 1: {
                 char nome[100]; /* Armazena o nome fornecido para o novo cliente */
                 char cpf[15]; /* Armazena o CPF fornecido para o novo cliente */
@@ -99,10 +100,15 @@ int main() {
                 if (fgets(cpf, sizeof(cpf), stdin)) {
                     cpf[strcspn(cpf, "\n")] = '\0';
                 }
-                printf("Senha: ");
-                if (fgets(senha, sizeof(senha), stdin)) {
-                    senha[strcspn(senha, "\n")] = '\0';
-                }
+                do {
+                    printf("Senha (mínimo 6 caracteres): ");
+                    if (fgets(senha, sizeof(senha), stdin)) {
+                        senha[strcspn(senha, "\n")] = '\0';
+                    }
+                    if (strlen(senha) < 6) {
+                        printf("⚠ Erro: A senha é muito curta. Tente novamente.\n");
+                    }
+                } while (strlen(senha) < 6);
 
                 /* Invocacao por referencia */
                 status = cadastrar_cliente(nome, cpf, senha, &novo_id);
