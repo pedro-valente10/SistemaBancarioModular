@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file testes.c
  * @brief Suíte de testes automatizados do Sistema Bancário Modular.
  *
@@ -50,12 +50,12 @@ static void assert_teste(const char *id, const char *descricao, int condicao) {
  * @brief Executa os casos de teste CT-01 a CT-04 (módulo Clientes).
  */
 static void testar_clientes(void) {
-    printf("\n╔══════════════════════════════════════════════════════╗\n");
-    printf("║           BLOCO 6.1 — MÓDULO CLIENTES               ║\n");
-    printf("╚══════════════════════════════════════════════════════╝\n");
+    printf("\n╔═══════════════════════════════════════════════════════╗\n");
+    printf("║             BLOCO 6.1 — MÓDULO CLIENTES               ║\n");
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 
-    int id_gerado = -1;
-    int ret;
+    int id_gerado = -1; /* Armazena o ID gerado pelo cadastro de teste */
+    int ret; /* Armazena o retorno da funcao testada */
 
     /*  CT-01: Cadastro com dados válidos  */
     ret = cadastrar_cliente("Fulano Silva", "123.456.789-00", "senha123", &id_gerado);
@@ -65,7 +65,7 @@ static void testar_clientes(void) {
                  id_gerado > 0);
 
     /*  CT-02: Cadastro com CPF duplicado  */
-    int id_dup = -1;
+    int id_dup = -1; /* Armazena o ID da tentativa duplicada */
     ret = cadastrar_cliente("Outro Nome", "123.456.789-00", "outrasenha", &id_dup);
     assert_teste("CT-02a", "segunda chamada com CPF duplicado retorna -1",
                  ret == -1);
@@ -73,7 +73,7 @@ static void testar_clientes(void) {
                  id_dup == -1);
 
     /*  CT-03: Login com credenciais corretas  */
-    int id_logado = -1;
+    int id_logado = -1; /* Armazena o ID do cliente retornado no login com sucesso */
     ret = login("123.456.789-00", "senha123", &id_logado);
     assert_teste("CT-03a", "login() retorna 0 para credenciais corretas",
                  ret == 0);
@@ -81,7 +81,7 @@ static void testar_clientes(void) {
                  id_logado > 0);
 
     /*  CT-04: Login com senha incorreta  */
-    int id_invalido = -1;
+    int id_invalido = -1; /* Armazena o ID no login falho */
     ret = login("123.456.789-00", "senhaerrada", &id_invalido);
     assert_teste("CT-04a", "login() retorna -1 para senha incorreta",
                  ret == -1);
@@ -98,12 +98,12 @@ static void testar_clientes(void) {
  * @param id_conta_out       Ponteiro de saída: recebe o ID da conta criada no CT-05.
  */
 static void testar_contas(int id_cliente_valido, int *id_conta_out) {
-    printf("\n╔══════════════════════════════════════════════════════╗\n");
-    printf("║           BLOCO 6.2 — MÓDULO CONTAS                 ║\n");
-    printf("╚══════════════════════════════════════════════════════╝\n");
+    printf("\n╔═══════════════════════════════════════════════════════╗\n");
+    printf("║              BLOCO 6.2 — MÓDULO CONTAS                ║\n");
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 
-    int ret;
-    int id_conta = -1;
+    int ret; /* Armazena o retorno das funcoes testadas */
+    int id_conta = -1; /* Armazena o ID da conta criada no teste */
 
     /*  CT-05: Abertura de conta corrente para cliente existente  */
     ret = abrir_conta(id_cliente_valido, "corrente", &id_conta);
@@ -115,7 +115,7 @@ static void testar_contas(int id_cliente_valido, int *id_conta_out) {
     *id_conta_out = id_conta;
 
     /*  CT-06: Abertura de conta para cliente inexistente  */
-    int id_conta_invalida = -1;
+    int id_conta_invalida = -1; /* Armazena o ID na abertura de conta falha */
     ret = abrir_conta(9999, "poupanca", &id_conta_invalida);
     assert_teste("CT-06a", "abrir_conta() retorna -1 para cliente inexistente",
                  ret == -1);
@@ -126,7 +126,7 @@ static void testar_contas(int id_cliente_valido, int *id_conta_out) {
     /* Realiza um depósito de R$ 500,00 para preparar o cenário */
     depositar(id_conta, 500.0);
 
-    double saldo = -1.0;
+    double saldo = -1.0; /* Armazena o saldo consultado no teste */
     ret = consultar_saldo(id_conta, &saldo);
     assert_teste("CT-07a", "consultar_saldo() retorna 0 para conta válida",
                  ret == 0);
@@ -143,12 +143,12 @@ static void testar_contas(int id_cliente_valido, int *id_conta_out) {
  * @param id_conta1          ID da conta criada no bloco Contas (saldo inicial R$ 500,00).
  */
 static void testar_transacoes(int id_cliente_valido, int id_conta1) {
-    printf("\n╔══════════════════════════════════════════════════════╗\n");
-    printf("║        BLOCO 6.3 — MÓDULO TRANSAÇÕES                ║\n");
-    printf("╚══════════════════════════════════════════════════════╝\n");
+    printf("\n╔═══════════════════════════════════════════════════════╗\n");
+    printf("║            BLOCO 6.3 — MÓDULO TRANSAÇÕES              ║\n");
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 
-    int ret;
-    double saldo = 0.0;
+    int ret; /* Armazena o retorno das funcoes de transacao testadas */
+    double saldo = 0.0; /* Armazena o saldo consultado para validacao */
 
     /*  CT-08: Depósito com valor positivo  */
     /* Estado inicial da conta1: R$ 500,00 (do CT-07) */
@@ -170,7 +170,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
 
     /*  CT-10: Saque com saldo insuficiente  */
     /* Conta1 tem R$ 1200,00; tenta sacar R$ 5000,00 */
-    double saldo_antes = 0.0;
+    double saldo_antes = 0.0; /* Armazena o saldo antes de uma operacao de teste */
     consultar_saldo(id_conta1, &saldo_antes);
 
     ret = sacar(id_conta1, 5000.0);
@@ -182,12 +182,12 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
 
     /*  CT-11: Transferência válida entre duas contas  */
     /* Criar segunda conta para o mesmo cliente */
-    int id_conta2 = -1;
+    int id_conta2 = -1; /* Armazena o ID da segunda conta para transferencia */
     abrir_conta(id_cliente_valido, "poupanca", &id_conta2);
     depositar(id_conta2, 100.0);  /* Conta2: R$ 100,00 */
 
     /* Zerar conta1 até R$ 500,00 para reproduzir o cenário do documento */
-    double saldo_atual1 = 0.0;
+    double saldo_atual1 = 0.0; /* Armazena o saldo atual para nivelamento do teste */
     consultar_saldo(id_conta1, &saldo_atual1);
     if (saldo_atual1 > 500.0) {
         sacar(id_conta1, saldo_atual1 - 500.0);
@@ -198,7 +198,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
     assert_teste("CT-11a", "transferir() retorna 0 para transferência válida",
                  ret == 0);
 
-    double saldo1 = 0.0, saldo2 = 0.0;
+    double saldo1 = 0.0, saldo2 = 0.0; /* Armazena saldos de origem e destino apos transferencia */
     consultar_saldo(id_conta1, &saldo1);
     consultar_saldo(id_conta2, &saldo2);
     assert_teste("CT-11b", "saldo da conta de origem reduz para R$ 300,00",
@@ -243,9 +243,9 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
  * @return int  0 se todos os testes passaram, 1 se algum falhou.
  */
 int executar_testes(void) {
-    printf("\n╔══════════════════════════════════════════════════════╗\n");
-    printf("║       SUÍTE DE TESTES AUTOMATIZADOS — T2 INF1040    ║\n");
-    printf("╚══════════════════════════════════════════════════════╝\n");
+    printf("\n╔═══════════════════════════════════════════════════════╗\n");
+    printf("║      SUÍTE DE TESTES AUTOMATIZADOS — T2 INF1040       ║\n");
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 
     /*  Bloco Clientes  */
     testar_clientes();
@@ -255,11 +255,11 @@ int executar_testes(void) {
      * seguintes. Fazemos um login para obter o ID sem depender de variável
      * estática interna (respeitando o encapsulamento do TAD).
      */
-    int id_cliente = -1;
+    int id_cliente = -1; /* Armazena o ID recuperado via login no teste de integracao */
     login("123.456.789-00", "senha123", &id_cliente);
 
     /*  Bloco Contas  */
-    int id_conta1 = -1;
+    int id_conta1 = -1; /* Armazena o ID da conta gerada no bloco Contas */
     testar_contas(id_cliente, &id_conta1);
 
     /*  Bloco Transações  */
@@ -270,13 +270,13 @@ int executar_testes(void) {
     }
 
     /*  Relatório final  */
-    printf("\n╔══════════════════════════════════════════════════════╗\n");
-    printf("║                   RELATÓRIO FINAL                   ║\n");
-    printf("╠══════════════════════════════════════════════════════╣\n");
-    printf("║  Total de testes : %-3d                               ║\n", total_testes);
-    printf("║  Passaram        : %-3d                               ║\n", testes_ok);
-    printf("║  Falharam        : %-3d                               ║\n", testes_falhou);
-    printf("╚══════════════════════════════════════════════════════╝\n");
+    printf("\n╔═══════════════════════════════════════════════════════╗\n");
+    printf("║                    RELATÓRIO FINAL                    ║\n");
+    printf("╠═══════════════════════════════════════════════════════╣\n");
+    printf("║  Total de testes : %-35d║\n", total_testes);
+    printf("║  Passaram        : %-35d║\n", testes_ok);
+    printf("║  Falharam        : %-35d║\n", testes_falhou);
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 
     return (testes_falhou == 0) ? 0 : 1;
 }

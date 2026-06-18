@@ -21,6 +21,11 @@ typedef struct {
  * @param id_conta Número da conta de destino (entrada).
  * @param valor Quantia a ser depositada (entrada).
  * @return int Retorna 0 para sucesso, ou -1 caso a conta não exista ou o valor seja inválido.
+ *
+ * Assertiva de entrada:  valor deve ser estritamente maior que 0.0.
+ * Assertiva de saída:
+ *   - se 0: o saldo é acrescido via modulo contas e uma transacao é salva no array interno.
+ *   - se -1: a operacao é negada, sem efeitos colaterais na conta ou historico.
  */
 int depositar(int id_conta, double valor);
 
@@ -30,6 +35,11 @@ int depositar(int id_conta, double valor);
  * @param id_conta Número da conta de origem (entrada).
  * @param valor Quantia a ser sacada (entrada).
  * @return int Retorna 0 para sucesso, ou -1 caso a conta não exista, o valor seja inválido ou o saldo seja insuficiente.
+ *
+ * Assertiva de entrada:  valor deve ser estritamente maior que 0.0.
+ * Assertiva de saída:
+ *   - se 0: o saldo é deduzido (modulo contas) e a transacao é salva no array interno.
+ *   - se -1: a operacao falha; o saldo nao muda e nenhum historico é gerado.
  */
 int sacar(int id_conta, double valor);
 
@@ -40,6 +50,11 @@ int sacar(int id_conta, double valor);
  * @param id_conta_destino Número da conta de destino (entrada).
  * @param valor Quantia a ser transferida (entrada).
  * @return int Retorna 0 para sucesso, ou -1 em caso de contas inválidas, valor incorreto ou saldo insuficiente.
+ *
+ * Assertiva de entrada:  valor deve ser > 0.0 e id_conta_origem != id_conta_destino.
+ * Assertiva de saída:
+ *   - se 0: saldo debitado da origem e creditado no destino. Transacao salva no array interno.
+ *   - se -1: a operacao falha (ou sofre rollback); nenhum saldo final é alterado.
  */
 int transferir(int id_conta_origem, int id_conta_destino, double valor);
 
@@ -49,6 +64,10 @@ int transferir(int id_conta_origem, int id_conta_destino, double valor);
  * Exibe as transações em ordem cronológica de registro.
  * 
  * @param id_conta ID da conta (entrada).
+ *
+ * Assertiva de entrada:  nenhuma.
+ * Assertiva de saída:    imprime na tela o historico e dados formatados. Nenhuma
+ *                        alteracao ocorre nas estruturas ou saldos.
  */
 void listar_transacoes(int id_conta);
 
@@ -56,6 +75,11 @@ void listar_transacoes(int id_conta);
  * @brief Salva os dados das transações em um arquivo de texto.
  * 
  * @return int Retorna 0 em caso de sucesso, ou -1 se houver erro ao abrir/escrever o arquivo.
+ *
+ * Assertiva de entrada:  nenhuma.
+ * Assertiva de saída:
+ *   - se 0: as transacoes contidas no encapsulamento sao gravadas em transacoes.txt.
+ *   - se -1: o arquivo nao pode ser criado; a memoria do TAD nao muda.
  */
 int salvar_transacoes_arquivo(void);
 
@@ -63,6 +87,11 @@ int salvar_transacoes_arquivo(void);
  * @brief Carrega os dados das transações de um arquivo de texto.
  * 
  * @return int Retorna 0 em caso de sucesso, ou -1 se houver erro ao abrir/ler o arquivo.
+ *
+ * Assertiva de entrada:  nenhuma.
+ * Assertiva de saída:
+ *   - se 0: o array de transacoes do modulo é alimentado com os dados do disco.
+ *   - se -1: caso de primeira execucao ou erro; a estrutura inicializa vazia.
  */
 int carregar_transacoes_arquivo(void);
 

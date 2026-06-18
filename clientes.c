@@ -134,7 +134,7 @@ int carregar_clientes_arquivo(void) {
     if (f == NULL) return -1;   /* 1a execucao: comeca vazio */
     while (total_clientes < MAX_CLIENTES &&
            fgets(linha, sizeof(linha), f) != NULL) {
-        Cliente c;
+        Cliente c; /* Variavel temporaria para os dados parseados na linha atual */
         if (sscanf(linha, "%d;%99[^;];%14[^;];%49[^\n]",
                    &c.id_cliente, c.nome, c.cpf, c.senha) == 4) {
             clientes[total_clientes] = c;

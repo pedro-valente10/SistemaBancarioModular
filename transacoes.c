@@ -243,11 +243,12 @@ void listar_transacoes(int id_conta) {
     int encontrou = 0; /* Flag booleana indicando se foram encontradas transacoes */
 
     printf("\n╔═══════════════════════════════════════════════════════╗\n");
-    printf("║        HISTÓRICO DE TRANSAÇÕES — Conta %-4d           ║\n", id_conta);
-    printf("╠═══════════════════════════════════════════════════════╣\n");
+    printf("║         HISTÓRICO DE TRANSAÇÕES — Conta %-4d          ║\n", id_conta);
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 
-    for (int i = 0; i < total_transacoes; i++) {
-        Transacao *t = &transacoes[i];
+    int i; /* Variavel iteradora para percorrer o array de transacoes */
+    for (i = 0; i < total_transacoes; i++) {
+        Transacao *t = &transacoes[i]; /* Ponteiro auxiliar para a transacao atual */
 
         /* RF-12: exibir transações da conta (origem ou destino) */
         if (t->id_conta != id_conta && t->id_conta_destino != id_conta) {
@@ -274,8 +275,6 @@ void listar_transacoes(int id_conta) {
     if (!encontrou) {
         printf("  Nenhuma transação registrada para a conta %d.\n", id_conta);
     }
-
-    printf("╚═══════════════════════════════════════════════════════╝\n");
 }
 
 /* Persistência */
@@ -297,8 +296,9 @@ int salvar_transacoes_arquivo(void) {
 
     fprintf(f, "%d\n", total_transacoes);
 
-    for (int i = 0; i < total_transacoes; i++) {
-        Transacao *t = &transacoes[i];
+    int i; /* Variavel iteradora para gravacao dos registros */
+    for (i = 0; i < total_transacoes; i++) {
+        Transacao *t = &transacoes[i]; /* Ponteiro auxiliar para a transacao atual */
         fprintf(f, "%d %d %d %s %.2f %s\n",
                 t->id_transacao,
                 t->id_conta,

@@ -45,7 +45,8 @@ int main() {
 
     /* Persistencia: recupera os dados gravados na execucao anterior (criterio #5) */
     carregar_clientes_arquivo();
-    /* TODO (grupo): carregar_contas_arquivo(); carregar_transacoes_arquivo(); */
+    carregar_contas_arquivo();
+    carregar_transacoes_arquivo();
 
     while (1) {
         printf("\n╔═══════════════════════════════════════════════════════╗\n");
@@ -342,7 +343,8 @@ int main() {
             case 9:
                 /* Persistencia: grava os dados antes de encerrar (criterio #5) */
                 salvar_clientes_arquivo();
-                /* TODO (grupo): salvar_contas_arquivo(); salvar_transacoes_arquivo(); */
+                salvar_contas_arquivo();
+                salvar_transacoes_arquivo();
                 printf("\n✦ Saindo do sistema bancário. Até mais!\n");
                 return 0;
             default:

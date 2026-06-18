@@ -3,13 +3,13 @@
 #include "contas.h"
 #include "clientes.h"   /* para validar o titular via buscar_cliente() */
 
-/* ===== Armazenamento encapsulado (TAD) — invisível a outros módulos ===== */
+/* Armazenamento encapsulado (TAD) — invisível a outros módulos */
 static Conta contas[MAX_CONTAS];
 static int total_contas = 0;
 static int proximo_id_conta = 1;
 
 int abrir_conta(int id_cliente, const char *tipo, int *id_conta_gerada) {
-    Cliente titular;
+    Cliente titular; /* Armazena os dados do cliente titular buscado */
     if (tipo == NULL || id_conta_gerada == NULL) return -1;
     if (total_contas >= MAX_CONTAS) return -1;
     /* Integridade referencial: o cliente titular deve existir */
@@ -28,7 +28,7 @@ int abrir_conta(int id_cliente, const char *tipo, int *id_conta_gerada) {
 }
 
 int consultar_saldo(int id_conta, double *saldo_retornado) {
-    int i;
+    int i; /* Variavel iteradora para percorrer o array de contas */
     if (saldo_retornado == NULL) return -1;
     if (id_conta <= 0) return -1;
     for (i = 0; i < total_contas; i++) {
@@ -41,7 +41,7 @@ int consultar_saldo(int id_conta, double *saldo_retornado) {
 }
 
 int atualiza_saldo(int id_conta, double valor) {
-    int i;
+    int i; /* Variavel iteradora para busca da conta */
     for (i = 0; i < total_contas; i++) {
         if (contas[i].id_conta == id_conta) {
             if (contas[i].saldo + valor < 0.0) return -1;  /* nunca permite saldo negativo */
@@ -53,24 +53,28 @@ int atualiza_saldo(int id_conta, double valor) {
 }
 
 void listar_contas(int id_cliente) {
-    int i, encontrou = 0;
+    int i, encontrou = 0; /* Iterador de busca e flag para cabecalho */
     for (i = 0; i < total_contas; i++) {
         if (contas[i].id_cliente == id_cliente) {
             if (!encontrou) {
-                printf("=== Contas do cliente %d ===\n", id_cliente);
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                 CONTAS DO CLIENTE %-3d                 ║\n", id_cliente);
+                printf("╠═══════════════════════════════════════════════════════╣\n");
                 encontrou = 1;
             }
-            printf("Conta: %d | Tipo: %s | Saldo: R$ %.2f\n",
+            printf("║ Conta: %-3d | Tipo: %-10s | Saldo: R$ %-9.2f ║\n",
                    contas[i].id_conta, contas[i].tipo, contas[i].saldo);
         }
     }
-    if (!encontrou) {
+    if (encontrou) {
+        printf("╚═══════════════════════════════════════════════════════╝\n");
+    } else {
         printf("Nenhuma conta encontrada para o cliente %d.\n", id_cliente);
     }
 }
 
 int buscar_conta(int id_conta, Conta *conta_retornada) {
-    int i;
+    int i; /* Variavel iteradora para busca no array de contas */
     if (conta_retornada == NULL) return -1;
     if (id_conta <= 0) return -1;
     for (i = 0; i < total_contas; i++) {
@@ -83,8 +87,8 @@ int buscar_conta(int id_conta, Conta *conta_retornada) {
 }
 
 int salvar_contas_arquivo(void) {
-    FILE *f;
-    int i;
+    FILE *f; /* Ponteiro para o arquivo de persistencia */
+    int i; /* Variavel iteradora para gravacao dos registros */
     f = fopen("contas.txt", "w");
     if (f == NULL) return -1;
     for (i = 0; i < total_contas; i++) {
@@ -97,16 +101,16 @@ int salvar_contas_arquivo(void) {
 }
 
 int carregar_contas_arquivo(void) {
-    FILE *f;
-    char linha[256];
-    int max_id = 0;
+    FILE *f; /* Ponteiro para o arquivo de persistencia */
+    char linha[256]; /* Buffer temporario para leitura de cada linha do arquivo */
+    int max_id = 0; /* Rastreia o ID maximo carregado para o proximo gerador */
     total_contas = 0;
     proximo_id_conta = 1;
     f = fopen("contas.txt", "r");
     if (f == NULL) return -1;   /* 1a execucao: comeca vazio */
     while (total_contas < MAX_CONTAS &&
            fgets(linha, sizeof(linha), f) != NULL) {
-        Conta c;
+        Conta c; /* Variavel temporaria para os dados parseados na linha atual */
         if (sscanf(linha, "%d;%d;%19[^;];%lf",
                    &c.id_conta, &c.id_cliente, c.tipo, &c.saldo) == 4) {
             contas[total_contas] = c;
