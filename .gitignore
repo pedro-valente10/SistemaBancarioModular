@@ -6,3 +6,5 @@ compile_commands.json
 *.exe
 *.o
 *.out
+*.obj
+*.pdb
