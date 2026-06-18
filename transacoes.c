@@ -17,7 +17,7 @@
 #include "contas.h"
 #include "transacoes.h"
 
-/* ─── Armazenamento interno (encapsulado — não exposto via .h) ─────────────── */
+/* Armazenamento interno (encapsulado — não exposto via .h) */
 
 /** Array estático de transações — acessível apenas neste módulo */
 static Transacao transacoes[MAX_TRANSACOES];
@@ -25,17 +25,18 @@ static Transacao transacoes[MAX_TRANSACOES];
 /** Contador de transações registradas */
 static int total_transacoes = 0;
 
-/* ─── Funções auxiliares internas ───────────────────────────────────────────── */
+/* Funções auxiliares internas */
 
 /**
  * @brief Obtém a data e hora atuais no formato DD/MM/AAAA HH:MM.
  *
  * @param buf   Buffer de destino (deve ter pelo menos 20 bytes).
  * @param tam   Tamanho do buffer.
+ * @return void Preenche o buffer com a data/hora atual.
  */
 static void obter_data_hora(char *buf, int tam) {
-    time_t agora = time(NULL);
-    struct tm *t = localtime(&agora);
+    time_t agora = time(NULL); /* Obtem o tempo atual do sistema */
+    struct tm *t = localtime(&agora); /* Converte para a estrutura local */
     /* Formato exigido pelo documento: DD/MM/AAAA HH:MM */
     strftime(buf, tam, "%d/%m/%Y %H:%M", t);
 }
@@ -56,7 +57,7 @@ static int registrar_transacao(int id_conta, int id_conta_destino,
         return -1;
     }
 
-    Transacao *t = &transacoes[total_transacoes];
+    Transacao *t = &transacoes[total_transacoes]; /* Ponteiro para a nova transacao no array */
 
     t->id_transacao     = total_transacoes + 1;   /* IDs começam em 1 */
     t->id_conta         = id_conta;
@@ -70,7 +71,7 @@ static int registrar_transacao(int id_conta, int id_conta_destino,
     return 0;
 }
 
-/* ─── Interface pública ─────────────────────────────────────────────────────── */
+/* Interface pública */
 
 /**
  * @brief Registra um depósito em uma conta bancária.
@@ -91,7 +92,7 @@ int depositar(int id_conta, double valor) {
     }
 
     /* Verificar existência da conta (consultar_saldo retorna -1 se inexistente) */
-    double saldo_atual = 0.0;
+    double saldo_atual = 0.0; /* Armazena o saldo atual da conta destino */
     if (consultar_saldo(id_conta, &saldo_atual) != 0) {
         fprintf(stderr, "⚠ Erro: conta %d não encontrada.\n", id_conta);
         return -1;
@@ -132,7 +133,7 @@ int sacar(int id_conta, double valor) {
     }
 
     /* Verificar existência da conta e obter saldo atual */
-    double saldo_atual = 0.0;
+    double saldo_atual = 0.0; /* Armazena o saldo atual da conta de origem */
     if (consultar_saldo(id_conta, &saldo_atual) != 0) {
         fprintf(stderr, "⚠ Erro: conta %d não encontrada.\n", id_conta);
         return -1;
@@ -185,14 +186,14 @@ int transferir(int id_conta_origem, int id_conta_destino, double valor) {
     }
 
     /* RF-11: verificar existência da conta de origem (via interface pública) */
-    double saldo_origem = 0.0;
+    double saldo_origem = 0.0; /* Armazena o saldo da conta de origem */
     if (consultar_saldo(id_conta_origem, &saldo_origem) != 0) {
         fprintf(stderr, "⚠ Erro: conta de origem %d não encontrada.\n", id_conta_origem);
         return -1;
     }
 
     /* RF-11: verificar existência da conta de destino (via interface pública) */
-    double saldo_destino = 0.0;
+    double saldo_destino = 0.0; /* Armazena o saldo da conta de destino */
     if (consultar_saldo(id_conta_destino, &saldo_destino) != 0) {
         fprintf(stderr, "⚠ Erro: conta de destino %d não encontrada.\n", id_conta_destino);
         return -1;
@@ -239,11 +240,11 @@ int transferir(int id_conta_origem, int id_conta_destino, double valor) {
  * @param id_conta  ID da conta cujo histórico será exibido (entrada).
  */
 void listar_transacoes(int id_conta) {
-    int encontrou = 0;
+    int encontrou = 0; /* Flag booleana indicando se foram encontradas transacoes */
 
-    printf("\n┌──────────────────────────────────────────────────────┐\n");
-    printf("│          HISTÓRICO DE TRANSAÇÕES — Conta %-4d        │\n", id_conta);
-    printf("└──────────────────────────────────────────────────────┘\n");
+    printf("\n╔═══════════════════════════════════════════════════════╗\n");
+    printf("║        HISTÓRICO DE TRANSAÇÕES — Conta %-4d           ║\n", id_conta);
+    printf("╠═══════════════════════════════════════════════════════╣\n");
 
     for (int i = 0; i < total_transacoes; i++) {
         Transacao *t = &transacoes[i];
@@ -274,10 +275,10 @@ void listar_transacoes(int id_conta) {
         printf("  Nenhuma transação registrada para a conta %d.\n", id_conta);
     }
 
-    printf("──────────────────────────────────────────────────────────\n");
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 }
 
-/* ─── Persistência ──────────────────────────────────────────────────────────── */
+/* Persistência */
 
 /**
  * @brief Salva os dados das transações em um arquivo de texto.
@@ -326,16 +327,16 @@ int carregar_transacoes_arquivo(void) {
         return -1;
     }
 
-    int total = 0;
+    int total = 0; /* Armazena o total de registros do arquivo */
     if (fscanf(f, "%d\n", &total) != 1) {
         fclose(f);
         return -1;
     }
 
     for (int i = 0; i < total && i < MAX_TRANSACOES; i++) {
-        Transacao *t = &transacoes[i];
+        Transacao *t = &transacoes[i]; /* Ponteiro para a transacao do iterador */
         /* data contém espaço — lida com dois tokens separados por scanf */
-        char hora[10];
+        char hora[10]; /* Buffer temporario para ler a segunda parte do datetime */
         if (fscanf(f, "%d %d %d %19s %lf %10s %9s",
                    &t->id_transacao,
                    &t->id_conta,

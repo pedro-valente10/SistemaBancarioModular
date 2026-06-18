@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file testes.c
  * @brief Suíte de testes automatizados do Sistema Bancário Modular.
  *
@@ -19,7 +19,7 @@
 #include "contas.h"
 #include "transacoes.h"
 
-/* ─── Infraestrutura de relatório ────────────────────────────────────────────── */
+/*  Infraestrutura de relatório  */
 
 /** Contadores globais de resultado */
 static int total_testes  = 0;
@@ -44,7 +44,7 @@ static void assert_teste(const char *id, const char *descricao, int condicao) {
     }
 }
 
-/* ─── Bloco 6.1: Módulo Clientes ────────────────────────────────────────────── */
+/*  Bloco 6.1: Módulo Clientes  */
 
 /**
  * @brief Executa os casos de teste CT-01 a CT-04 (módulo Clientes).
@@ -57,14 +57,14 @@ static void testar_clientes(void) {
     int id_gerado = -1;
     int ret;
 
-    /* ── CT-01: Cadastro com dados válidos ───────────────────────────────── */
+    /*  CT-01: Cadastro com dados válidos  */
     ret = cadastrar_cliente("Fulano Silva", "123.456.789-00", "senha123", &id_gerado);
     assert_teste("CT-01a", "cadastrar_cliente() retorna 0 para dados válidos",
                  ret == 0);
     assert_teste("CT-01b", "ID gerado é positivo (capturado via ponteiro)",
                  id_gerado > 0);
 
-    /* ── CT-02: Cadastro com CPF duplicado ──────────────────────────────── */
+    /*  CT-02: Cadastro com CPF duplicado  */
     int id_dup = -1;
     ret = cadastrar_cliente("Outro Nome", "123.456.789-00", "outrasenha", &id_dup);
     assert_teste("CT-02a", "segunda chamada com CPF duplicado retorna -1",
@@ -72,7 +72,7 @@ static void testar_clientes(void) {
     assert_teste("CT-02b", "ID da tentativa duplicada permanece -1",
                  id_dup == -1);
 
-    /* ── CT-03: Login com credenciais corretas ──────────────────────────── */
+    /*  CT-03: Login com credenciais corretas  */
     int id_logado = -1;
     ret = login("123.456.789-00", "senha123", &id_logado);
     assert_teste("CT-03a", "login() retorna 0 para credenciais corretas",
@@ -80,7 +80,7 @@ static void testar_clientes(void) {
     assert_teste("CT-03b", "ID do cliente retornado via ponteiro é válido",
                  id_logado > 0);
 
-    /* ── CT-04: Login com senha incorreta ───────────────────────────────── */
+    /*  CT-04: Login com senha incorreta  */
     int id_invalido = -1;
     ret = login("123.456.789-00", "senhaerrada", &id_invalido);
     assert_teste("CT-04a", "login() retorna -1 para senha incorreta",
@@ -89,7 +89,7 @@ static void testar_clientes(void) {
                  id_invalido == -1);
 }
 
-/* ─── Bloco 6.2: Módulo Contas ──────────────────────────────────────────────── */
+/*  Bloco 6.2: Módulo Contas  */
 
 /**
  * @brief Executa os casos de teste CT-05 a CT-07 (módulo Contas).
@@ -105,7 +105,7 @@ static void testar_contas(int id_cliente_valido, int *id_conta_out) {
     int ret;
     int id_conta = -1;
 
-    /* ── CT-05: Abertura de conta corrente para cliente existente ───────── */
+    /*  CT-05: Abertura de conta corrente para cliente existente  */
     ret = abrir_conta(id_cliente_valido, "corrente", &id_conta);
     assert_teste("CT-05a", "abrir_conta() retorna 0 para cliente existente",
                  ret == 0);
@@ -114,7 +114,7 @@ static void testar_contas(int id_cliente_valido, int *id_conta_out) {
 
     *id_conta_out = id_conta;
 
-    /* ── CT-06: Abertura de conta para cliente inexistente ──────────────── */
+    /*  CT-06: Abertura de conta para cliente inexistente  */
     int id_conta_invalida = -1;
     ret = abrir_conta(9999, "poupanca", &id_conta_invalida);
     assert_teste("CT-06a", "abrir_conta() retorna -1 para cliente inexistente",
@@ -122,7 +122,7 @@ static void testar_contas(int id_cliente_valido, int *id_conta_out) {
     assert_teste("CT-06b", "ID permanece -1 para cliente inexistente",
                  id_conta_invalida == -1);
 
-    /* ── CT-07: Consulta de saldo após depósito ─────────────────────────── */
+    /*  CT-07: Consulta de saldo após depósito  */
     /* Realiza um depósito de R$ 500,00 para preparar o cenário */
     depositar(id_conta, 500.0);
 
@@ -134,7 +134,7 @@ static void testar_contas(int id_cliente_valido, int *id_conta_out) {
                  saldo == 500.0);
 }
 
-/* ─── Bloco 6.3: Módulo Transações ──────────────────────────────────────────── */
+/*  Bloco 6.3: Módulo Transações  */
 
 /**
  * @brief Executa os casos de teste CT-08 a CT-13 (módulo Transações).
@@ -150,7 +150,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
     int ret;
     double saldo = 0.0;
 
-    /* ── CT-08: Depósito com valor positivo ─────────────────────────────── */
+    /*  CT-08: Depósito com valor positivo  */
     /* Estado inicial da conta1: R$ 500,00 (do CT-07) */
     ret = depositar(id_conta1, 1000.0);
     assert_teste("CT-08a", "depositar() retorna 0 para valor positivo",
@@ -159,7 +159,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
     assert_teste("CT-08b", "saldo aumenta corretamente após depósito (R$ 1500,00)",
                  saldo == 1500.0);
 
-    /* ── CT-09: Saque com saldo suficiente ──────────────────────────────── */
+    /*  CT-09: Saque com saldo suficiente  */
     /* Conta1 tem R$ 1500,00; saca R$ 300,00 → esperado R$ 1200,00 */
     ret = sacar(id_conta1, 300.0);
     assert_teste("CT-09a", "sacar() retorna 0 para saldo suficiente",
@@ -168,7 +168,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
     assert_teste("CT-09b", "saldo reduz corretamente após saque (R$ 1200,00)",
                  saldo == 1200.0);
 
-    /* ── CT-10: Saque com saldo insuficiente ────────────────────────────── */
+    /*  CT-10: Saque com saldo insuficiente  */
     /* Conta1 tem R$ 1200,00; tenta sacar R$ 5000,00 */
     double saldo_antes = 0.0;
     consultar_saldo(id_conta1, &saldo_antes);
@@ -180,7 +180,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
     assert_teste("CT-10b", "saldo permanece inalterado após saque recusado",
                  saldo == saldo_antes);
 
-    /* ── CT-11: Transferência válida entre duas contas ───────────────────── */
+    /*  CT-11: Transferência válida entre duas contas  */
     /* Criar segunda conta para o mesmo cliente */
     int id_conta2 = -1;
     abrir_conta(id_cliente_valido, "poupanca", &id_conta2);
@@ -206,7 +206,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
     assert_teste("CT-11c", "saldo da conta de destino aumenta para R$ 300,00",
                  saldo2 == 300.0);
 
-    /* ── CT-12: Transferência para a mesma conta ────────────────────────── */
+    /*  CT-12: Transferência para a mesma conta  */
     ret = transferir(id_conta1, id_conta1, 100.0);
     assert_teste("CT-12a", "transferir() retorna -1 para origem == destino",
                  ret == -1);
@@ -214,7 +214,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
     assert_teste("CT-12b", "saldo permanece inalterado após tentativa inválida",
                  saldo == 300.0);
 
-    /* ── CT-13: Listagem do histórico ───────────────────────────────────── */
+    /*  CT-13: Listagem do histórico  */
     /*
      * A conta1 acumulou até aqui (em ordem):
      *   1. depositar  R$ 500,00  (CT-07 — preparação)
@@ -232,7 +232,7 @@ static void testar_transacoes(int id_cliente_valido, int id_conta1) {
                  1 /* verificação visual no console acima */);
 }
 
-/* ─── Ponto de entrada ───────────────────────────────────────────────────────── */
+/*  Ponto de entrada  */
 
 /**
  * @brief Executa a suíte completa de testes automatizados.
@@ -247,7 +247,7 @@ int executar_testes(void) {
     printf("║       SUÍTE DE TESTES AUTOMATIZADOS — T2 INF1040    ║\n");
     printf("╚══════════════════════════════════════════════════════╝\n");
 
-    /* ── Bloco Clientes ─────────────────────────────────────────────────── */
+    /*  Bloco Clientes  */
     testar_clientes();
 
     /*
@@ -258,18 +258,18 @@ int executar_testes(void) {
     int id_cliente = -1;
     login("123.456.789-00", "senha123", &id_cliente);
 
-    /* ── Bloco Contas ───────────────────────────────────────────────────── */
+    /*  Bloco Contas  */
     int id_conta1 = -1;
     testar_contas(id_cliente, &id_conta1);
 
-    /* ── Bloco Transações ───────────────────────────────────────────────── */
+    /*  Bloco Transações  */
     if (id_conta1 > 0) {
         testar_transacoes(id_cliente, id_conta1);
     } else {
         printf("\n  [SKIP] Bloco Transações pulado: nenhuma conta criada nos testes anteriores.\n");
     }
 
-    /* ── Relatório final ────────────────────────────────────────────────── */
+    /*  Relatório final  */
     printf("\n╔══════════════════════════════════════════════════════╗\n");
     printf("║                   RELATÓRIO FINAL                   ║\n");
     printf("╠══════════════════════════════════════════════════════╣\n");
@@ -281,7 +281,7 @@ int executar_testes(void) {
     return (testes_falhou == 0) ? 0 : 1;
 }
 
-/* ─── main() standalone (compilar apenas com -DTESTES_STANDALONE) ──────────── */
+/*  main() standalone (compilar apenas com -DTESTES_STANDALONE)  */
 #ifdef TESTES_STANDALONE
 int main(void) {
     return executar_testes();

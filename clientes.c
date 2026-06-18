@@ -2,17 +2,24 @@
 #include <string.h>
 #include "clientes.h"
 
-/* ===== Armazenamento encapsulado (TAD) — invisível a outros módulos ===== */
+/* Armazenamento encapsulado (TAD) — invisível a outros módulos */
 static Cliente clientes[MAX_CLIENTES];
 static int total_clientes = 0;
 static int proximo_id     = 1;
 
-/* Normaliza CPF: aceita com ou sem mascara, exige exatamente 11 digitos e
- * apenas caracteres validos (digitos, '.' e '-'). Escreve "DDD.DDD.DDD-DD"
- * em 'saida' (>= 15 bytes). Retorna 0 se valido, -1 caso contrario. */
+/**
+ * @brief Normaliza o CPF para o formato padrão.
+ *
+ * Aceita com ou sem máscara, exige exatamente 11 dígitos e
+ * apenas caracteres válidos (dígitos, '.' e '-'). Escreve "000.000.000-00" na saída.
+ *
+ * @param entrada String contendo o CPF de origem (entrada).
+ * @param saida   Buffer de destino para o CPF normalizado (saída).
+ * @return int    0 se válido, -1 caso contrário.
+ */
 static int normalizar_cpf(const char *entrada, char *saida) {
-    char digitos[12];
-    int nd = 0, i;
+    char digitos[12]; /* Buffer para os 11 digitos numericos do CPF */
+    int nd = 0, i; /* Contadores para numero de digitos e loop de leitura */
     if (entrada == NULL) return -1;
     for (i = 0; entrada[i] != '\0'; i++) {
         char c = entrada[i];
@@ -34,8 +41,8 @@ static int normalizar_cpf(const char *entrada, char *saida) {
 
 int cadastrar_cliente(const char *nome, const char *cpf,
                       const char *senha, int *id_cliente_gerado) {
-    char cpf_norm[15];
-    int i;
+    char cpf_norm[15]; /* Armazena o CPF formatado e normalizado */
+    int i; /* Variavel iteradora para percorrer o array de clientes */
     if (nome == NULL || cpf == NULL || senha == NULL || id_cliente_gerado == NULL)
         return -1;
     if (total_clientes >= MAX_CLIENTES) return -1;
@@ -60,8 +67,8 @@ int cadastrar_cliente(const char *nome, const char *cpf,
 }
 
 int login(const char *cpf, const char *senha, int *id_cliente_retornado) {
-    char cpf_norm[15];
-    int i;
+    char cpf_norm[15]; /* Armazena o CPF formatado e normalizado */
+    int i; /* Variavel iteradora para percorrer o array de clientes */
     if (cpf == NULL || senha == NULL || id_cliente_retornado == NULL) return -1;
     if (normalizar_cpf(cpf, cpf_norm) != 0) return -1;
     for (i = 0; i < total_clientes; i++) {
@@ -75,7 +82,7 @@ int login(const char *cpf, const char *senha, int *id_cliente_retornado) {
 }
 
 int buscar_cliente(int id_cliente, Cliente *cliente_retornado) {
-    int i;
+    int i; /* Variavel iteradora para busca no array de clientes */
     if (cliente_retornado == NULL) return -1;
     if (id_cliente <= 0) return -1;
     for (i = 0; i < total_clientes; i++) {
@@ -88,21 +95,24 @@ int buscar_cliente(int id_cliente, Cliente *cliente_retornado) {
 }
 
 void listar_clientes(void) {
-    int i;
+    int i; /* Variavel iteradora para imprimir a lista de clientes */
     if (total_clientes == 0) {
         printf("Nenhum cliente cadastrado.\n");
         return;
     }
-    printf("=== Clientes cadastrados ===\n");
+    printf("\n╔═══════════════════════════════════════════════════════╗\n");
+    printf("║                 CLIENTES CADASTRADOS                  ║\n");
+    printf("╠═══════════════════════════════════════════════════════╣\n");
     for (i = 0; i < total_clientes; i++) {
-        printf("ID: %d | Nome: %s | CPF: %s\n",
+        printf("║ ID: %-3d | Nome: %-25s | CPF: %-14s ║\n",
                clientes[i].id_cliente, clientes[i].nome, clientes[i].cpf);
     }
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 }
 
 int salvar_clientes_arquivo(void) {
-    FILE *f;
-    int i;
+    FILE *f; /* Ponteiro para o arquivo de persistencia */
+    int i; /* Variavel iteradora para gravacao dos registros */
     f = fopen("clientes.txt", "w");
     if (f == NULL) return -1;
     for (i = 0; i < total_clientes; i++) {
@@ -115,9 +125,9 @@ int salvar_clientes_arquivo(void) {
 }
 
 int carregar_clientes_arquivo(void) {
-    FILE *f;
-    char linha[256];
-    int max_id = 0;
+    FILE *f; /* Ponteiro para o arquivo de persistencia */
+    char linha[256]; /* Buffer para armazenar cada linha lida do arquivo */
+    int max_id = 0; /* Rastreia o maior ID lido para configurar o proximo gerador */
     total_clientes = 0;
     proximo_id = 1;
     f = fopen("clientes.txt", "r");
