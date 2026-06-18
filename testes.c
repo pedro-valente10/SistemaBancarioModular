@@ -132,6 +132,24 @@ static void testar_contas(int id_cliente_valido, int *id_conta_out) {
                  ret == 0);
     assert_teste("CT-07b", "saldo retornado via ponteiro reflete o depósito (R$ 500,00)",
                  saldo == 500.0);
+
+    /*  CT-14: Verificar se cliente possui conta (Nova regra de seguranca) */
+    ret = cliente_tem_conta(id_cliente_valido);
+    assert_teste("CT-14a", "cliente_tem_conta() retorna 1 para cliente com conta",
+                 ret == 1);
+    
+    ret = cliente_tem_conta(9999);
+    assert_teste("CT-14b", "cliente_tem_conta() retorna 0 para cliente sem conta/inexistente",
+                 ret == 0);
+
+    /*  CT-15: Verificar titularidade de conta (Nova regra de seguranca) */
+    ret = verifica_titularidade(id_conta, id_cliente_valido);
+    assert_teste("CT-15a", "verifica_titularidade() retorna 1 quando cliente é o titular",
+                 ret == 1);
+
+    ret = verifica_titularidade(id_conta, 9999);
+    assert_teste("CT-15b", "verifica_titularidade() retorna 0 para cliente não titular",
+                 ret == 0);
 }
 
 /*  Bloco 6.3: Módulo Transações  */

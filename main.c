@@ -1,3 +1,11 @@
+/**
+ * @file main.c
+ * @brief Ponto de entrada do Sistema Bancário Modular.
+ *
+ * Renderiza o menu interativo no console, interage com o usuário, invoca os
+ * submódulos (Clientes, Contas, Transações) e gerencia a interface visual.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,13 +71,14 @@ int main() {
         printf("║  ➤ 1. Cadastrar Cliente                               ║\n");
         printf("║  ➤ 2. Fazer Login                                     ║\n");
         printf("║  ➤ 3. Abrir Conta                                     ║\n");
-        printf("║  ➤ 4. Consultar Saldo                                 ║\n");
-        printf("║  ➤ 5. Depositar                                       ║\n");
-        printf("║  ➤ 6. Sacar                                           ║\n");
-        printf("║  ➤ 7. Transferir                                      ║\n");
-        printf("║  ➤ 8. Listar Histórico                                ║\n");
+        printf("║  ➤ 4. Minhas Contas                                   ║\n");
+        printf("║  ➤ 5. Consultar Saldo                                 ║\n");
+        printf("║  ➤ 6. Depositar                                       ║\n");
+        printf("║  ➤ 7. Sacar                                           ║\n");
+        printf("║  ➤ 8. Transferir                                      ║\n");
+        printf("║  ➤ 9. Listar Histórico                                ║\n");
         printf("╠═══════════════════════════════════════════════════════╣\n");
-        printf("║  ➤ 9. Sair                                            ║\n");
+        printf("║  ➤ 10. Sair                                           ║\n");
         printf("╚═══════════════════════════════════════════════════════╝\n");
         printf("Escolha uma opção: ");
 
@@ -80,6 +89,21 @@ int main() {
             continue;
         }
         limpar_buffer(); /* Limpa o '\n' restante do buffer */
+
+        /* Validacoes globais de acesso */
+        if (opcao >= 3 && opcao <= 9) {
+            if (usuario_logado_id == -1) {
+                printf("\n⚠ Erro: Você precisa fazer login para acessar esta opção.\n");
+                continue;
+            }
+        }
+
+        if (opcao >= 5 && opcao <= 9) {
+            if (!cliente_tem_conta(usuario_logado_id)) {
+                printf("\n⚠ Erro: Você precisa abrir uma conta antes de realizar operações financeiras.\n");
+                continue;
+            }
+        }
 
         switch (opcao) {
 
@@ -202,6 +226,13 @@ int main() {
                 break;
             }
             case 4: {
+                printf("\n╔═══════════════════════════════════════════════════════╗\n");
+                printf("║                     MINHAS CONTAS                     ║\n");
+                printf("╚═══════════════════════════════════════════════════════╝\n");
+                listar_contas(usuario_logado_id);
+                break;
+            }
+            case 5: {
                 int numero_conta; /* Armazena o numero da conta a ser consultado */
                 double saldo = 0.0; /* Ponteiro de saida: recebe o valor do saldo da conta */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
@@ -217,6 +248,11 @@ int main() {
                 }
                 limpar_buffer();
 
+                if (!verifica_titularidade(numero_conta, usuario_logado_id)) {
+                    printf("⚠ Erro de Segurança: Você não é o titular desta conta.\n");
+                    break;
+                }
+
                 status = consultar_saldo(numero_conta, &saldo);
                 if (status == 0) {
                     printf("✦ Sucesso: Saldo da conta %d: R$ %.2f\n", numero_conta, saldo);
@@ -225,7 +261,7 @@ int main() {
                 }
                 break;
             }
-            case 5: {
+            case 6: {
                 int numero_conta; /* Armazena o numero da conta destino do deposito */
                 double valor; /* Armazena a quantia monetaria a ser depositada */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
@@ -255,7 +291,7 @@ int main() {
                 }
                 break;
             }
-            case 6: {
+            case 7: {
                 int numero_conta; /* Armazena o numero da conta de onde sera realizado o saque */
                 double valor; /* Armazena a quantia monetaria a ser sacada */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
@@ -269,6 +305,13 @@ int main() {
                     limpar_buffer();
                     break;
                 }
+                
+                if (!verifica_titularidade(numero_conta, usuario_logado_id)) {
+                    printf("⚠ Erro de Segurança: Você não é o titular desta conta.\n");
+                    limpar_buffer();
+                    break;
+                }
+                
                 printf("Digite o valor do saque: ");
                 if (scanf("%lf", &valor) != 1 || valor <= 0) {
                     printf("⚠ Erro: Valor inválido.\n");
@@ -285,7 +328,7 @@ int main() {
                 }
                 break;
             }
-            case 7: {
+            case 8: {
                 int conta_origem; /* Armazena o numero da conta de origem dos fundos */
                 int conta_destino; /* Armazena o numero da conta de destino dos fundos */
                 double valor; /* Armazena a quantia monetaria a ser transferida */
@@ -300,6 +343,13 @@ int main() {
                     limpar_buffer();
                     break;
                 }
+                
+                if (!verifica_titularidade(conta_origem, usuario_logado_id)) {
+                    printf("⚠ Erro de Segurança: Você não é o titular da conta de origem.\n");
+                    limpar_buffer();
+                    break;
+                }
+                
                 printf("Digite o número da conta de destino: ");
                 if (scanf("%d", &conta_destino) != 1) {
                     printf("⚠ Erro: Número inválido.\n");
@@ -314,16 +364,21 @@ int main() {
                 }
                 limpar_buffer();
 
+                if (conta_origem == conta_destino) {
+                    printf("⚠ Erro: Não é possível transferir para a mesma conta.\n");
+                    break;
+                }
+
                 status = transferir(conta_origem, conta_destino, valor);
                 if (status == 0) {
                     printf("✦ Sucesso: Transferência concluída!\n");
                     printf("Valor: R$ %.2f De: %d Para: %d\n", valor, conta_origem, conta_destino);
                 } else {
-                    printf("⚠ Erro: Saldo insuficiente ou contas inválidas.\n");
+                    printf("⚠ Erro: Saldo insuficiente ou conta inexistente.\n");
                 }
                 break;
             }
-            case 8: {
+            case 9: {
                 int numero_conta; /* Armazena o numero da conta para consulta do historico */
 
                 printf("\n╔═══════════════════════════════════════════════════════╗\n");
@@ -337,10 +392,15 @@ int main() {
                 }
                 limpar_buffer();
 
+                if (!verifica_titularidade(numero_conta, usuario_logado_id)) {
+                    printf("⚠ Erro de Segurança: Você não é o titular desta conta.\n");
+                    break;
+                }
+
                 listar_transacoes(numero_conta);
                 break;
             }
-            case 9:
+            case 10:
                 /* Persistencia: grava os dados antes de encerrar (criterio #5) */
                 salvar_clientes_arquivo();
                 salvar_contas_arquivo();

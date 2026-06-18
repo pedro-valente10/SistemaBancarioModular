@@ -52,12 +52,13 @@ static void obter_data_hora(char *buf, int tam) {
  */
 static int registrar_transacao(int id_conta, int id_conta_destino,
                                const char *tipo, double valor) {
+    Transacao *t; /* Ponteiro para a nova transacao no array */
+    
     if (total_transacoes >= MAX_TRANSACOES) {
-        fprintf(stderr, "⚠ Erro: limite máximo de transações atingido.\n");
         return -1;
     }
 
-    Transacao *t = &transacoes[total_transacoes]; /* Ponteiro para a nova transacao no array */
+    t = &transacoes[total_transacoes];
 
     t->id_transacao     = total_transacoes + 1;   /* IDs começam em 1 */
     t->id_conta         = id_conta;
@@ -75,32 +76,26 @@ static int registrar_transacao(int id_conta, int id_conta_destino,
 
 /**
  * @brief Registra um depósito em uma conta bancária.
- *
- * Valida os parâmetros, credita o valor via atualiza_saldo() e registra
- * a transação na estrutura interna com tipo "deposito".
- *
- * @param id_conta  Número da conta de destino (entrada).
- * @param valor     Quantia a ser depositada — deve ser > 0 (entrada).
- * @return int  0 em caso de sucesso, -1 se a conta não existir, o valor for
- *              inválido ou o limite de transações tiver sido atingido.
+ * 
+ * @param id_conta Número da conta de destino (entrada).
+ * @param valor Quantia a ser depositada (entrada).
+ * @return int Retorna 0 para sucesso, ou -1 caso a conta não exista ou o valor seja inválido.
  */
 int depositar(int id_conta, double valor) {
+    double saldo_atual = 0.0; /* Armazena o saldo atual da conta destino */
+
     /* RF-09: validar valor */
     if (valor <= 0.0) {
-        fprintf(stderr, "⚠ Erro: valor de depósito deve ser maior que zero.\n");
         return -1;
     }
 
     /* Verificar existência da conta (consultar_saldo retorna -1 se inexistente) */
-    double saldo_atual = 0.0; /* Armazena o saldo atual da conta destino */
     if (consultar_saldo(id_conta, &saldo_atual) != 0) {
-        fprintf(stderr, "⚠ Erro: conta %d não encontrada.\n", id_conta);
         return -1;
     }
 
     /* Creditar valor */
     if (atualiza_saldo(id_conta, valor) != 0) {
-        fprintf(stderr, "⚠ Erro: não foi possível atualizar o saldo da conta %d.\n", id_conta);
         return -1;
     }
 
@@ -114,40 +109,31 @@ int depositar(int id_conta, double valor) {
 
 /**
  * @brief Registra um saque em uma conta bancária.
- *
- * Verifica saldo disponível via consultar_saldo() antes de debitar.
- * Chama atualiza_saldo() com valor negativo e registra a transação
- * com tipo "saque".
- *
- * @param id_conta  Número da conta de origem (entrada).
- * @param valor     Quantia a ser sacada — deve ser > 0 e <= saldo (entrada).
- * @return int  0 em caso de sucesso, -1 se a conta não existir, o valor for
- *              inválido, o saldo for insuficiente ou o limite de transações
- *              tiver sido atingido.
+ * 
+ * @param id_conta Número da conta de origem (entrada).
+ * @param valor Quantia a ser sacada (entrada).
+ * @return int Retorna 0 para sucesso, ou -1 caso a conta não exista, o valor seja inválido ou o saldo seja insuficiente.
  */
 int sacar(int id_conta, double valor) {
+    double saldo_atual = 0.0; /* Armazena o saldo atual da conta de origem */
+
     /* RF-10: validar valor */
     if (valor <= 0.0) {
-        fprintf(stderr, "⚠ Erro: valor de saque deve ser maior que zero.\n");
         return -1;
     }
 
     /* Verificar existência da conta e obter saldo atual */
-    double saldo_atual = 0.0; /* Armazena o saldo atual da conta de origem */
     if (consultar_saldo(id_conta, &saldo_atual) != 0) {
-        fprintf(stderr, "⚠ Erro: conta %d não encontrada.\n", id_conta);
         return -1;
     }
 
     /* RF-10: verificar saldo suficiente */
     if (saldo_atual < valor) {
-        fprintf(stderr, "⚠ Erro: saldo insuficiente. Saldo disponível: R$ %.2f\n", saldo_atual);
         return -1;
     }
 
     /* Debitar valor (negativo para subtração) */
     if (atualiza_saldo(id_conta, -valor) != 0) {
-        fprintf(stderr, "⚠ Erro: não foi possível atualizar o saldo da conta %d.\n", id_conta);
         return -1;
     }
 
@@ -161,54 +147,43 @@ int sacar(int id_conta, double valor) {
 
 /**
  * @brief Realiza a transferência de valores entre duas contas bancárias.
- *
- * Valida a existência de ambas as contas e o saldo disponível (via
- * consultar_saldo()), debita da origem e credita no destino via
- * atualiza_saldo(). Registra uma única transação com ambos os IDs.
- *
- * @param id_conta_origem   Número da conta de origem (entrada).
- * @param id_conta_destino  Número da conta de destino (entrada).
- * @param valor             Quantia a ser transferida — deve ser > 0 (entrada).
- * @return int  0 em caso de sucesso, -1 em caso de validação falha, saldo
- *              insuficiente ou limite de transações atingido.
+ * 
+ * @param id_conta_origem Número da conta de origem (entrada).
+ * @param id_conta_destino Número da conta de destino (entrada).
+ * @param valor Quantia a ser transferida (entrada).
+ * @return int Retorna 0 para sucesso, ou -1 em caso de contas inválidas, valor incorreto ou saldo insuficiente.
  */
 int transferir(int id_conta_origem, int id_conta_destino, double valor) {
+    double saldo_origem = 0.0; /* Armazena o saldo da conta de origem */
+    double saldo_destino = 0.0; /* Armazena o saldo da conta de destino */
+
     /* RF-11: validar valor */
     if (valor <= 0.0) {
-        fprintf(stderr, "⚠ Erro: valor de transferência deve ser maior que zero.\n");
         return -1;
     }
 
     /* CT-12: origem e destino não podem ser iguais */
     if (id_conta_origem == id_conta_destino) {
-        fprintf(stderr, "⚠ Erro: conta de origem e destino não podem ser iguais.\n");
         return -1;
     }
 
     /* RF-11: verificar existência da conta de origem (via interface pública) */
-    double saldo_origem = 0.0; /* Armazena o saldo da conta de origem */
     if (consultar_saldo(id_conta_origem, &saldo_origem) != 0) {
-        fprintf(stderr, "⚠ Erro: conta de origem %d não encontrada.\n", id_conta_origem);
         return -1;
     }
 
     /* RF-11: verificar existência da conta de destino (via interface pública) */
-    double saldo_destino = 0.0; /* Armazena o saldo da conta de destino */
     if (consultar_saldo(id_conta_destino, &saldo_destino) != 0) {
-        fprintf(stderr, "⚠ Erro: conta de destino %d não encontrada.\n", id_conta_destino);
         return -1;
     }
 
     /* RF-11: verificar saldo suficiente na origem */
     if (saldo_origem < valor) {
-        fprintf(stderr, "⚠ Erro: saldo insuficiente na conta de origem. Disponível: R$ %.2f\n",
-                saldo_origem);
         return -1;
     }
 
     /* Debitar da origem */
     if (atualiza_saldo(id_conta_origem, -valor) != 0) {
-        fprintf(stderr, "⚠ Erro: falha ao debitar da conta de origem %d.\n", id_conta_origem);
         return -1;
     }
 
@@ -216,8 +191,6 @@ int transferir(int id_conta_origem, int id_conta_destino, double valor) {
     if (atualiza_saldo(id_conta_destino, valor) != 0) {
         /* Tentar reverter o débito para manter consistência */
         atualiza_saldo(id_conta_origem, valor);
-        fprintf(stderr, "⚠ Erro: falha ao creditar na conta de destino %d. Operação revertida.\n",
-                id_conta_destino);
         return -1;
     }
 
@@ -230,25 +203,24 @@ int transferir(int id_conta_origem, int id_conta_destino, double valor) {
 }
 
 /**
- * @brief Exibe no console o histórico de transações de uma conta.
- *
- * Percorre a estrutura interna e imprime todas as transações onde
- * id_conta == id_conta_origem OU id_conta_destino == id_conta (para
- * que transferências recebidas também apareçam no extrato).
- * As transações são exibidas em ordem de registro (cronológica).
- *
- * @param id_conta  ID da conta cujo histórico será exibido (entrada).
+ * @brief Exibe no console o histórico de todas as transações associadas a uma conta.
+ * 
+ * Exibe as transações em ordem cronológica de registro.
+ * 
+ * @param id_conta ID da conta (entrada).
  */
 void listar_transacoes(int id_conta) {
+    int i; /* Variavel iteradora para percorrer o array de transacoes */
     int encontrou = 0; /* Flag booleana indicando se foram encontradas transacoes */
 
-    printf("\n╔═══════════════════════════════════════════════════════╗\n");
-    printf("║         HISTÓRICO DE TRANSAÇÕES — Conta %-4d          ║\n", id_conta);
-    printf("╚═══════════════════════════════════════════════════════╝\n");
+    printf("\n╔═══════════════════════════════════════════════════════════════════════════╗\n");
+    printf("║                   HISTÓRICO DE TRANSAÇÕES - Conta %-4d                    ║\n", id_conta);
+    printf("╠═══════════════════════════════════════════════════════════════════════════╣\n");
 
-    int i; /* Variavel iteradora para percorrer o array de transacoes */
     for (i = 0; i < total_transacoes; i++) {
         Transacao *t = &transacoes[i]; /* Ponteiro auxiliar para a transacao atual */
+        char extra_info[30] = ""; /* Armazena detalhes sobre transferencia (origem/destino) */
+        char linha_completa[100]; /* Buffer para formatacao da linha para ajuste da borda */
 
         /* RF-12: exibir transações da conta (origem ou destino) */
         if (t->id_conta != id_conta && t->id_conta_destino != id_conta) {
@@ -257,46 +229,45 @@ void listar_transacoes(int id_conta) {
 
         encontrou = 1;
 
-        printf("  [#%03d] %-14s | R$ %10.2f | %s",
-               t->id_transacao, t->tipo, t->valor, t->data);
-
-        /* Para transferências, indicar sentido e conta envolvida */
+        /* Para transferências, usar ascii puro para garantir o alinhamento em %-73s */
         if (strcmp(t->tipo, "transferencia") == 0) {
             if (t->id_conta == id_conta) {
-                printf(" | → Destino: %d", t->id_conta_destino);
+                sprintf(extra_info, " | -> Destino: %-3d", t->id_conta_destino);
             } else {
-                printf(" | ← Origem:  %d", t->id_conta);
+                sprintf(extra_info, " | <- Origem:  %-3d", t->id_conta);
             }
         }
 
-        printf("\n");
+        /* Monta a string contendo as informacoes e imprime no formato da tabela */
+        sprintf(linha_completa, "[#%03d] %-14s | R$ %-9.2f | %s%s", 
+                t->id_transacao, t->tipo, t->valor, t->data, extra_info);
+        
+        printf("║ %-73s ║\n", linha_completa);
     }
 
     if (!encontrou) {
-        printf("  Nenhuma transação registrada para a conta %d.\n", id_conta);
+        printf("║               Nenhuma transação registrada para esta conta.               ║\n");
     }
+    printf("╚═══════════════════════════════════════════════════════════════════════════╝\n");
 }
 
 /* Persistência */
 
 /**
  * @brief Salva os dados das transações em um arquivo de texto.
- *
- * Formato de cada linha:
- *   id_transacao id_conta id_conta_destino tipo valor data
- *
- * @return int  0 em caso de sucesso, -1 se houver erro ao abrir/escrever o arquivo.
+ * 
+ * @return int Retorna 0 em caso de sucesso, ou -1 se houver erro ao abrir/escrever o arquivo.
  */
 int salvar_transacoes_arquivo(void) {
+    int i; /* Variavel iteradora para gravacao dos registros */
     FILE *f = fopen("transacoes.txt", "w");
+    
     if (f == NULL) {
-        fprintf(stderr, "⚠ Erro: não foi possível abrir transacoes.txt para escrita.\n");
         return -1;
     }
 
     fprintf(f, "%d\n", total_transacoes);
 
-    int i; /* Variavel iteradora para gravacao dos registros */
     for (i = 0; i < total_transacoes; i++) {
         Transacao *t = &transacoes[i]; /* Ponteiro auxiliar para a transacao atual */
         fprintf(f, "%d %d %d %s %.2f %s\n",
@@ -314,29 +285,29 @@ int salvar_transacoes_arquivo(void) {
 
 /**
  * @brief Carrega os dados das transações de um arquivo de texto.
- *
- * Lê o arquivo gravado por salvar_transacoes_arquivo() e restaura
- * a estrutura interna de transações.
- *
- * @return int  0 em caso de sucesso, -1 se houver erro ao abrir/ler o arquivo.
+ * 
+ * @return int Retorna 0 em caso de sucesso, ou -1 se houver erro ao abrir/ler o arquivo.
  */
 int carregar_transacoes_arquivo(void) {
+    int i; /* Variavel iteradora de loops */
+    int total = 0; /* Armazena o total de registros do arquivo */
     FILE *f = fopen("transacoes.txt", "r");
+    
     if (f == NULL) {
         /* Arquivo inexistente na primeira execução — não é erro crítico */
         return -1;
     }
 
-    int total = 0; /* Armazena o total de registros do arquivo */
     if (fscanf(f, "%d\n", &total) != 1) {
         fclose(f);
         return -1;
     }
 
-    for (int i = 0; i < total && i < MAX_TRANSACOES; i++) {
+    for (i = 0; i < total && i < MAX_TRANSACOES; i++) {
         Transacao *t = &transacoes[i]; /* Ponteiro para a transacao do iterador */
-        /* data contém espaço — lida com dois tokens separados por scanf */
         char hora[10]; /* Buffer temporario para ler a segunda parte do datetime */
+        
+        /* data contém espaço — lida com dois tokens separados por scanf */
         if (fscanf(f, "%d %d %d %19s %lf %10s %9s",
                    &t->id_transacao,
                    &t->id_conta,

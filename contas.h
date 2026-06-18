@@ -68,6 +68,23 @@ int atualiza_saldo(int id_conta, double valor);
 void listar_contas(int id_cliente);
 
 /**
+ * @brief Verifica se um determinado cliente possui alguma conta cadastrada.
+ * 
+ * @param id_cliente ID do cliente a ser verificado (entrada).
+ * @return int Retorna 1 se possuir pelo menos uma conta, 0 caso contrário.
+ */
+int cliente_tem_conta(int id_cliente);
+
+/**
+ * @brief Verifica se uma conta pertence a um cliente específico.
+ * 
+ * @param id_conta ID da conta bancária (entrada).
+ * @param id_cliente ID do cliente titular a validar (entrada).
+ * @return int Retorna 1 se o cliente for titular da conta, 0 caso contrário.
+ */
+int verifica_titularidade(int id_conta, int id_cliente);
+
+/**
  * @brief Localiza uma conta na estrutura interna pelo seu ID.
  * 
  * @param id_conta ID da conta a ser buscada (entrada).
