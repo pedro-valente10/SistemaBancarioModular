@@ -283,6 +283,11 @@ int main() {
                 }
                 limpar_buffer();
 
+                if (!verifica_titularidade(numero_conta, usuario_logado_id)) {
+                    printf("⚠ Erro de Segurança: Você não é o titular desta conta.\n");
+                    break;
+                }
+
                 status = depositar(numero_conta, valor);
                 if (status == 0) {
                     printf("✦ Sucesso: Depósito de R$ %.2f na conta %d\n", valor, numero_conta);
