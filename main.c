@@ -85,7 +85,7 @@ int main() {
 
             case 1: {
                 char nome[100]; /* Armazena o nome fornecido para o novo cliente */
-                char cpf[15]; /* Armazena o CPF fornecido para o novo cliente */
+                char cpf[20]; /* Armazena o CPF fornecido para o novo cliente */
                 char senha[50]; /* Armazena a senha cadastrada para o novo cliente */
                 int novo_id = -1; /* Ponteiro de saida: recebe o ID incremental gerado para o cliente */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
@@ -121,7 +121,7 @@ int main() {
                 break;
             }
             case 2: {
-                char cpf[15]; /* Armazena o CPF inserido para autenticacao */
+                char cpf[20]; /* Armazena o CPF inserido para autenticacao */
                 char senha[50]; /* Armazena a senha inserida para autenticacao */
                 int id_cliente = -1; /* Ponteiro de saida: recebe o ID do cliente correspondente se logado */
                 int status; /* Armazena o codigo de retorno das operacoes de negocio (0 para sucesso, -1 para erro) */
