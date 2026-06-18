@@ -32,7 +32,7 @@ static int normalizar_cpf(const char *entrada, char *saida) {
     if (entrada == NULL) return -1;
     
     for (i = 0; entrada[i] != '\0'; i++) {
-        char c = entrada[i];
+        char c = entrada[i]; /* Armazena o caractere atual sendo analisado no laco */
         if (c >= '0' && c <= '9') {
             if (nd >= 11) return -1;
             digitos[nd++] = c;

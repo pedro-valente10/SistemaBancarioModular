@@ -170,7 +170,7 @@ void listar_contas(int id_cliente) {
  * @return int Retorna 1 se possuir pelo menos uma conta, 0 caso contrário.
  */
 int cliente_tem_conta(int id_cliente) {
-    int i;
+    int i; /* Variavel iteradora para procurar as contas do cliente no array */
     if (id_cliente <= 0) return 0;
     
     for (i = 0; i < total_contas; i++) {
@@ -189,7 +189,7 @@ int cliente_tem_conta(int id_cliente) {
  * @return int Retorna 1 se o cliente for titular da conta, 0 caso contrário.
  */
 int verifica_titularidade(int id_conta, int id_cliente) {
-    int i;
+    int i; /* Variavel iteradora para procurar as contas no array */
     for (i = 0; i < total_contas; i++) {
         if (contas[i].id_conta == id_conta && contas[i].id_cliente == id_cliente) {
             return 1;

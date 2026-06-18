@@ -260,7 +260,7 @@ void listar_transacoes(int id_conta) {
  */
 int salvar_transacoes_arquivo(void) {
     int i; /* Variavel iteradora para gravacao dos registros */
-    FILE *f = fopen("transacoes.txt", "w");
+    FILE *f = fopen("transacoes.txt", "w"); /* Ponteiro para criar e gravar o arquivo de persistencia */
     
     if (f == NULL) {
         return -1;
@@ -291,7 +291,7 @@ int salvar_transacoes_arquivo(void) {
 int carregar_transacoes_arquivo(void) {
     int i; /* Variavel iteradora de loops */
     int total = 0; /* Armazena o total de registros do arquivo */
-    FILE *f = fopen("transacoes.txt", "r");
+    FILE *f = fopen("transacoes.txt", "r"); /* Ponteiro para leitura do arquivo de persistencia */
     
     if (f == NULL) {
         /* Arquivo inexistente na primeira execução — não é erro crítico */
