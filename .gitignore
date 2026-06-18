@@ -1,0 +1,8 @@
+# Arquivos de IDE e LSP
+compile_commands.json
+.vscode/
+
+# Binários compilados
+*.exe
+*.o
+*.out
